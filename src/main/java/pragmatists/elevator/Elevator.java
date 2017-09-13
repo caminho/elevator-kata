@@ -4,16 +4,17 @@ public class Elevator {
 
     private final Door door;
     private final Engine engine;
+
     private Floor requestedFloor;
+    private Floor currentFloor = new Floor(0);
 
     public Elevator(Door door, Engine engine) {
-
         this.door = door;
         this.engine = engine;
     }
 
     public Floor currentFloor() {
-        return new Floor(0);
+        return currentFloor;
     }
 
     public void floorRequested(Floor floor) {
@@ -34,9 +35,18 @@ public class Elevator {
         }
     }
 
-    public void reachedFloor(Floor currentFloor) {
+    public void floorReached(Floor currentFloor) {
+        this.currentFloor = currentFloor;
         if (requestedFloor.equals(currentFloor)) {
             engine.stop();
         }
+    }
+
+    public void engineStopped() {
+        door.open();
+    }
+
+    public void doorOpened() {
+
     }
 }

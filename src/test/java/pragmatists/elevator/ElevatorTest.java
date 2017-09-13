@@ -2,9 +2,7 @@ package pragmatists.elevator;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -75,7 +73,7 @@ public class ElevatorTest {
         elevator.floorRequested(Floor.ofLevel(requestedLevel));
         elevator.doorClosed();
 
-        elevator.reachedFloor(Floor.ofLevel(reachedLevel));
+        elevator.floorReached(Floor.ofLevel(reachedLevel));
 
         verify(engine, never()).stop();
     }
@@ -87,7 +85,7 @@ public class ElevatorTest {
         elevator.floorRequested(Floor.ofLevel(requestedLevel));
         elevator.doorClosed();
 
-        elevator.reachedFloor(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(requestedLevel));
 
         verify(engine).stop();
     }
@@ -98,11 +96,56 @@ public class ElevatorTest {
         elevator.floorRequested(Floor.ofLevel(3));
         elevator.doorClosed();
 
-        elevator.reachedFloor(Floor.ofLevel(1));
-        elevator.reachedFloor(Floor.ofLevel(2));
-        verify(engine, never()).stop();
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(2));
+        elevator.floorReached(Floor.ofLevel(3));
 
-        elevator.reachedFloor(Floor.ofLevel(3));
         verify(engine).stop();
+    }
+
+    @Test
+    public void shouldOpenDoorAfterEngineStoppedAtRequestedFloor() {
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorClosed();
+
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.engineStopped();
+
+        verify(door).open();
+    }
+
+    @Test
+    public void shouldMoveToNextRequestedFloorInTheSameDirection() {
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorClosed();
+
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.engineStopped();
+        elevator.doorOpened();
+
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorClosed();
+
+        verify(engine, times(2)).start(Direction.UP);
+    }
+
+    @Test
+    public void shouldMoveToNextRequestedFloorInOppositeDirection() {
+
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorClosed();
+
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(2));
+        elevator.engineStopped();
+        elevator.doorOpened();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorClosed();
+
+        verify(engine).start(Direction.UP);
+        verify(engine).start(Direction.DOWN);
     }
 }

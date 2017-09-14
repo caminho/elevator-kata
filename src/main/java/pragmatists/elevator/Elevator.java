@@ -8,6 +8,9 @@ public class Elevator {
     private Floor requestedFloor;
     private Floor currentFloor = new Floor(0);
 
+    private boolean doorOpened = false;
+    private boolean doorClosed = true;
+
     public Elevator(Door door, Engine engine) {
         this.door = door;
         this.engine = engine;
@@ -18,20 +21,27 @@ public class Elevator {
     }
 
     public void floorRequested(Floor floor) {
+
         if (!floor.equals(currentFloor())) {
             requestedFloor = floor;
-            door.close();
+            if (doorOpened) {
+                door.close();
+            }
         }
     }
 
     public void doorClosed() {
         if (requestedFloor != null) {
-            if (requestedFloor.lowerThan(currentFloor())) {
-                engine.start(Engine.Direction.DOWN);
-            }
-            if (requestedFloor.higherThan(currentFloor())) {
-                engine.start(Engine.Direction.UP);
-            }
+            startEngine();
+        }
+    }
+
+    private void startEngine() {
+        if (requestedFloor.lowerThan(currentFloor())) {
+            engine.start(Engine.Direction.DOWN);
+        }
+        if (requestedFloor.higherThan(currentFloor())) {
+            engine.start(Engine.Direction.UP);
         }
     }
 
@@ -47,6 +57,6 @@ public class Elevator {
     }
 
     public void doorOpened() {
-
+        doorOpened = true;
     }
 }

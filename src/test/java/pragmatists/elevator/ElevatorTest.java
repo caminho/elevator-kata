@@ -17,6 +17,8 @@ public class ElevatorTest {
     private final Engine engine = mock(Engine.class);
     private final Elevator elevator = new Elevator(door, engine);
 
+
+
     @Test
     public void elevatorShouldStartAtGroundZero() {
 
@@ -27,6 +29,7 @@ public class ElevatorTest {
     @Test
     public void shouldCloseDoorWhenFloorRequested() {
 
+        elevator.doorOpened();
         elevator.floorRequested(Floor.ofLevel(5));
 
         verify(door).close();
@@ -35,7 +38,17 @@ public class ElevatorTest {
     @Test
     public void shouldNotCloseDoorWhenRequestedCurrentFloor() {
 
+        elevator.doorOpened();
         elevator.floorRequested(Floor.ofLevel(0));
+
+        verify(door, never()).close();
+    }
+
+    @Test
+    public void shouldNotCloseDoorIfAlreadyClosed() {
+
+        elevator.doorClosed();
+        elevator.floorRequested(Floor.ofLevel(1));
 
         verify(door, never()).close();
     }
@@ -45,6 +58,15 @@ public class ElevatorTest {
 
         elevator.floorRequested(Floor.ofLevel(1));
         elevator.doorClosed();
+
+        verify(engine).start(Direction.UP);
+    }
+
+    @Test
+    public void shouldStartGoingUpWhenDoorClosedAndFloorRequested() {
+
+        elevator.doorClosed();
+        elevator.floorRequested(Floor.ofLevel(1));
 
         verify(engine).start(Direction.UP);
     }
@@ -148,4 +170,22 @@ public class ElevatorTest {
         verify(engine).start(Direction.UP);
         verify(engine).start(Direction.DOWN);
     }
+
+//    @Test
+//    public void shouldRequestManyFloorsBeforeMove() {
+//
+//        elevator.floorRequested(Floor.ofLevel(1));
+//        elevator.floorRequested(Floor.ofLevel(2));
+//        elevator.doorClosed();
+//
+//        elevator.floorReached(Floor.ofLevel(1));
+//        elevator.floorReached(Floor.ofLevel(2));
+//        elevator.engineStopped();
+//        elevator.doorOpened();
+//
+//        elevator.floorRequested(Floor.ofLevel(1));
+//        elevator.doorClosed();
+//
+//
+//    }
 }

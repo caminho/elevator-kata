@@ -2,6 +2,8 @@ package pragmatists.elevator.test;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import pragmatists.elevator.engine.ElevatorEngine;
+import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.ElevatorDoor;
 import pragmatists.elevator.panel.ButtonPanel;
@@ -34,9 +36,10 @@ public class ElevatorDriver {
     }
 
     void whenRun() {
-        EventBusLogger eventLogger = new EventBusLogger(eventBus);
-        Door door = new ElevatorDoor(eventLogger);
-        elevator = new Elevator(eventLogger, door);
+        EventBusLogger logger = new EventBusLogger(eventBus);
+        Door door = new ElevatorDoor(logger);
+        Engine engine = new ElevatorEngine(logger);
+        elevator = new Elevator(door, engine);
         buttonPanel = new ElevatorButtonPanel(elevator);
         elevator.run();
     }

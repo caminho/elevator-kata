@@ -1,6 +1,4 @@
 package pragmatists.elevator.event;
 
-import java.util.EventObject;
-
-public class DoorOpenEvent {
+public class DoorOpenEvent extends ElevatorEvent {
 }

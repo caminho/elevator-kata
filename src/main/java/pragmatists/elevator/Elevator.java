@@ -38,8 +38,20 @@ public class Elevator implements ButtonListener, DoorListener, EngineListener {
 
     @Override
     public void floorReached(Floor floor) {
-        if (floor.equals(requestedFloor)) {
+        this.currentFloor = floor;
+        if (atRequestedFloor()) {
             engine.stop();
         }
+    }
+
+    @Override
+    public void engineStopped() {
+        if (atRequestedFloor()) {
+            door.open();
+        }
+    }
+
+    private boolean atRequestedFloor() {
+        return currentFloor.equals(requestedFloor);
     }
 }

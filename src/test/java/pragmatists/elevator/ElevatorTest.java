@@ -64,23 +64,48 @@ public class ElevatorTest {
         Floor requestedFloor = Floor.ofLevel(1);
 
         elevator.floorRequested(requestedFloor);
-        elevator.doorClosed();
         elevator.floorReached(requestedFloor);
 
         verify(engine).stop();
     }
 
     @Test
-    public void shouldNotStopEngineWhenReachedMiddleFloor() {
+    public void shouldNotStopEngineWhenReachedNotRequestedFloor() {
 
         Elevator elevator = new Elevator(door, engine);
         Floor requestedFloor = Floor.ofLevel(2);
         Floor reachedFloor = Floor.ofLevel(1);
 
         elevator.floorRequested(requestedFloor);
-        elevator.doorClosed();
         elevator.floorReached(reachedFloor);
 
         verify(engine, times(0)).stop();
+    }
+
+    @Test
+    public void shouldOpenDoorAfterStopAtRequestedLevel() {
+
+        Elevator elevator = new Elevator(door, engine);
+        Floor requestedFloor = Floor.ofLevel(1);
+
+        elevator.floorRequested(requestedFloor);
+        elevator.floorReached(requestedFloor);
+        elevator.engineStopped();
+
+        verify(door).open();
+    }
+
+    @Test
+    public void shouldNotOpenDoorWhenStopAtNotRequestedLevel() {
+
+        Elevator elevator = new Elevator(door, engine);
+        Floor requestedFloor = Floor.ofLevel(2);
+        Floor reachedLevel = Floor.ofLevel(1);
+
+        elevator.floorRequested(requestedFloor);
+        elevator.floorReached(reachedLevel);
+        elevator.engineStopped();
+
+        verify(door, times(0)).open();
     }
 }

@@ -4,6 +4,7 @@ import pragmatists.elevator.Direction;
 import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
 import pragmatists.elevator.event.EngineStartedEvent;
+import pragmatists.elevator.event.EngineStoppedEvent;
 import pragmatists.elevator.event.FloorReachedEvent;
 
 public class ElevatorEngine implements Engine {
@@ -34,6 +35,9 @@ public class ElevatorEngine implements Engine {
 
     @Override
     public void stop() {
-
+        logger.logEvent(new EngineStoppedEvent());
+        if (engineSensor != null) {
+            engineSensor.engineStopped();
+        }
     }
 }

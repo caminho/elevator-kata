@@ -6,9 +6,11 @@ import pragmatists.elevator.Direction;
 import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
 import pragmatists.elevator.event.EngineStartedEvent;
+import pragmatists.elevator.event.EngineStoppedEvent;
 import pragmatists.elevator.event.FloorReachedEvent;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -28,7 +30,7 @@ public class ElevatorEngineTest {
     }
 
     @Test
-    public void shouldNotifyEngineStarted() {
+    public void shouldLogEngineStartedEvent() {
 
         engine.start(ANY_FLOOR, SOME_DIRECTION);
 
@@ -37,13 +39,37 @@ public class ElevatorEngineTest {
     }
 
     @Test
+    public void shouldLogReachingNextFloorEvent() {
+
+        Floor currentLevel = Floor.ofLevel(1);
+        engine.start(currentLevel, Direction.UP);
+
+        verify(logger).logEvent(
+                new FloorReachedEvent(currentLevel.nextFloor().level()));
+    }
+
+    @Test
     public void shouldNotifyAboutReachingNextFloor() {
 
         Floor currentLevel = Floor.ofLevel(1);
         engine.start(currentLevel, Direction.UP);
 
-        verify(logger).logEvent(new FloorReachedEvent(2));
-        verify(engineSensor).floorReached(Floor.ofLevel(2));
+        verify(engineSensor).floorReached(currentLevel.nextFloor());
     }
 
+    @Test
+    public void shouldLogEngineStoppedEvent() {
+
+        engine.stop();
+
+        verify(logger).logEvent(isA(EngineStoppedEvent.class));
+    }
+
+    @Test
+    public void shouldNotifyEngineStopped() {
+
+        engine.stop();
+
+        verify(engineSensor).engineStopped();
+    }
 }

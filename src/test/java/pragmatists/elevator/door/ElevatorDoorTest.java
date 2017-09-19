@@ -23,7 +23,7 @@ public class ElevatorDoorTest {
     }
 
     @Test
-    public void shouldLogWhenDoorOpened() {
+    public void shouldLogDoorOpenedEvent() {
 
         door.open();
 
@@ -31,7 +31,7 @@ public class ElevatorDoorTest {
     }
 
     @Test
-    public void shouldLogWhenDoorClosed() {
+    public void shouldLogDoorClosedEvent() {
 
         door.close();
 

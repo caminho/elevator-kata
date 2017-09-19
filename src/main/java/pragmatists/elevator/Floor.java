@@ -7,8 +7,16 @@ public class Floor {
         this.level = level;
     }
 
-    public static Floor of(int level) {
+    public int level() {
+        return level;
+    }
+
+    public static Floor ofLevel(int level) {
         return new Floor(level);
+    }
+
+    public Floor nextFloor() {
+        return Floor.ofLevel(level + 1);
     }
 
     @Override
@@ -24,5 +32,12 @@ public class Floor {
     @Override
     public int hashCode() {
         return level;
+    }
+
+    @Override
+    public String toString() {
+        return "Floor{" +
+                "level=" + level +
+                '}';
     }
 }

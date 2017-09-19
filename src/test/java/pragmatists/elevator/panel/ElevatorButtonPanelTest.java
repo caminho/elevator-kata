@@ -18,6 +18,6 @@ public class ElevatorButtonPanelTest {
 
         buttonPanel.buttonPressed(ANY_BUTTON_NUMBER);
 
-        verify(listener).floorRequested(Floor.of(ANY_BUTTON_NUMBER));
+        verify(listener).floorRequested(Floor.ofLevel(ANY_BUTTON_NUMBER));
     }
 }

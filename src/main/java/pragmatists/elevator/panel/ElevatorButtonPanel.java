@@ -11,6 +11,6 @@ public class ElevatorButtonPanel implements ButtonPanel {
 
     @Override
     public void buttonPressed(int buttonNumber) {
-        buttonListener.floorRequested(Floor.of(buttonNumber));
+        buttonListener.floorRequested(Floor.ofLevel(buttonNumber));
     }
 }

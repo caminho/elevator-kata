@@ -12,8 +12,17 @@ public class FloorTest {
     @Test
     public void shouldCreateFloorOfGivenLevel() {
 
-        Floor floor = Floor.of(SOME_LEVEL);
+        Floor floor = Floor.ofLevel(SOME_LEVEL);
 
         assertThat(floor).isEqualTo(new Floor(SOME_LEVEL));
+    }
+
+    @Test
+    public void shouldDefineNextFloor() {
+
+        Floor floor = Floor.ofLevel(SOME_LEVEL);
+
+        assertThat(floor.nextFloor())
+                .isEqualTo(Floor.ofLevel(SOME_LEVEL + 1));
     }
 }

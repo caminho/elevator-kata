@@ -17,10 +17,14 @@ public class ElevatorTest {
     private final Door door = mock(Door.class);
     private final Engine engine = mock(Engine.class);
 
+    private ElevatorBuilder anElevator() {
+        return ElevatorBuilder.anElevator(door, engine);
+    }
+    
     @Test
     public void shouldRegisterItselfToCollaborators() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
 
         verify(door).setListener(elevator);
         verify(engine).setListener(elevator);
@@ -29,7 +33,7 @@ public class ElevatorTest {
     @Test
     public void shouldOpenDoorAfterStart() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
 
         elevator.run();
 
@@ -39,7 +43,7 @@ public class ElevatorTest {
     @Test
     public void shouldCloseDoorWhenFloorRequested() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
 
         elevator.floorRequested(Floor.ofLevel(ANY_FLOOR_LEVEL));
 
@@ -49,7 +53,7 @@ public class ElevatorTest {
     @Test
     public void shouldStartEngineWhenFloorRequestedAndDoorClosed() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
 
         elevator.floorRequested(Floor.ofLevel(1));
         elevator.doorClosed();
@@ -60,7 +64,7 @@ public class ElevatorTest {
     @Test
     public void shouldStopEngineWhenRequestedFloorReached() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
         Floor requestedFloor = Floor.ofLevel(1);
 
         elevator.floorRequested(requestedFloor);
@@ -72,7 +76,7 @@ public class ElevatorTest {
     @Test
     public void shouldNotStopEngineWhenReachedNotRequestedFloor() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
         Floor requestedFloor = Floor.ofLevel(2);
         Floor reachedFloor = Floor.ofLevel(1);
 
@@ -85,7 +89,7 @@ public class ElevatorTest {
     @Test
     public void shouldOpenDoorAfterStopAtRequestedLevel() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
         Floor requestedFloor = Floor.ofLevel(1);
 
         elevator.floorRequested(requestedFloor);
@@ -98,7 +102,7 @@ public class ElevatorTest {
     @Test
     public void shouldNotOpenDoorWhenStopAtNotRequestedLevel() {
 
-        Elevator elevator = new Elevator(door, engine);
+        Elevator elevator = anElevator().build();
         Floor requestedFloor = Floor.ofLevel(2);
         Floor reachedLevel = Floor.ofLevel(1);
 

@@ -2,5 +2,5 @@ package pragmatists.elevator.door;
 
 public interface DoorListener {
 
-    void doorClosed();
+    void doorStateChanged(DoorState closed);
 }

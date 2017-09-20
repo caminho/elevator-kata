@@ -2,6 +2,7 @@ package pragmatists.elevator;
 
 import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.DoorListener;
+import pragmatists.elevator.door.DoorState;
 import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.engine.EngineListener;
 import pragmatists.elevator.panel.ButtonListener;
@@ -33,7 +34,7 @@ public class Elevator implements
     }
 
     @Override
-    public void doorClosed() {
+    public void doorStateChanged(DoorState doorState) {
         engine.start(currentFloor, Direction.UP);
     }
 

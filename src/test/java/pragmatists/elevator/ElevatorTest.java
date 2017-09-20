@@ -1,6 +1,7 @@
 package pragmatists.elevator;
 
 import org.junit.Test;
+import pragmatists.elevator.door.DoorState;
 import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.door.Door;
 
@@ -56,7 +57,7 @@ public class ElevatorTest {
         Elevator elevator = anElevator().build();
 
         elevator.floorRequested(Floor.ofLevel(1));
-        elevator.doorClosed();
+        elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(eq(Floor.ofLevel(0)), any(Direction.class));
     }

@@ -43,6 +43,6 @@ public class ElevatorDoorTest {
 
         door.close();
 
-        verify(doorListener).doorClosed();
+        verify(doorListener).doorStateChanged(DoorState.CLOSED);
     }
 }

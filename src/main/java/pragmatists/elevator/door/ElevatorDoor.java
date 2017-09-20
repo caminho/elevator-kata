@@ -17,7 +17,7 @@ public class ElevatorDoor implements Door {
     public void close() {
         eventLogger.logEvent(new DoorClosedEvent());
         if (doorListener != null) {
-            doorListener.doorClosed();
+            doorListener.doorStateChanged(DoorState.CLOSED);
         }
     }
 

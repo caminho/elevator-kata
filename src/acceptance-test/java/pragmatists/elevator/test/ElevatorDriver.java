@@ -2,9 +2,9 @@ package pragmatists.elevator.test;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import pragmatists.elevator.door.LazyDoorDriver;
 import pragmatists.elevator.engine.ElevatorEngine;
 import pragmatists.elevator.engine.Engine;
-import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.ElevatorDoor;
 import pragmatists.elevator.panel.ButtonPanel;
 import pragmatists.elevator.Direction;
@@ -24,6 +24,9 @@ public class ElevatorDriver {
 
     private ButtonPanel buttonPanel;
     private Elevator elevator;
+    private LazyDoorDriver door;
+    private Engine engine;
+    private EventBusLogger logger;
 
     ElevatorDriver() {
         this.eventBus = new EventBus();
@@ -36,9 +39,9 @@ public class ElevatorDriver {
     }
 
     void whenRun() {
-        EventBusLogger logger = new EventBusLogger(eventBus);
-        Door door = new ElevatorDoor(logger);
-        Engine engine = new ElevatorEngine(logger);
+        logger = new EventBusLogger(eventBus);
+        door = new LazyDoorDriver(new ElevatorDoor(logger));
+        engine = new ElevatorEngine(logger);
         elevator = new Elevator(door, engine);
         buttonPanel = new ElevatorButtonPanel(elevator);
         elevator.run();
@@ -73,5 +76,9 @@ public class ElevatorDriver {
 
     private Object nextEvent() {
         return eventQueue.poll();
+    }
+
+    void makeDoorStep() {
+        door.moveIfRequested();
     }
 }

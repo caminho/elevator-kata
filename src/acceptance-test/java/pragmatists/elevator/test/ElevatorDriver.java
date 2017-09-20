@@ -25,7 +25,7 @@ public class ElevatorDriver {
     private ButtonPanel buttonPanel;
     private Elevator elevator;
     private LazyDoorDriver door;
-    private Engine engine;
+    private ElevatorEngine engine;
     private EventBusLogger logger;
 
     ElevatorDriver() {
@@ -80,5 +80,9 @@ public class ElevatorDriver {
 
     void makeDoorStep() {
         door.moveIfRequested();
+    }
+
+    void makeEngineStep() {
+        engine.step();
     }
 }

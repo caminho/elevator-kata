@@ -28,6 +28,8 @@ public class ElevatorAcceptanceTest {
 
         elevator.thenDoorClosed();
         elevator.thenEngineStarted(Direction.UP);
+
+        elevator.makeEngineStep();
         elevator.thenFloorReached(1);
         elevator.thenEngineStopped();
 
@@ -48,9 +50,14 @@ public class ElevatorAcceptanceTest {
 
         elevator.thenDoorClosed();
         elevator.thenEngineStarted(Direction.UP);
+
+        elevator.makeEngineStep();
         elevator.thenFloorReached(1);
+        elevator.makeEngineStep();
         elevator.thenFloorReached(2);
+        elevator.makeEngineStep();
         elevator.thenFloorReached(3);
+        elevator.makeEngineStep();
         elevator.thenEngineStopped();
 
         elevator.makeDoorStep();

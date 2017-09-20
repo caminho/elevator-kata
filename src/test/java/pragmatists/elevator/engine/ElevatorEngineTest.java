@@ -1,28 +1,25 @@
 package pragmatists.elevator.engine;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import pragmatists.elevator.Direction;
 import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
-import pragmatists.elevator.event.EngineStartedEvent;
 import pragmatists.elevator.event.EngineStoppedEvent;
-import pragmatists.elevator.event.FloorReachedEvent;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+@RunWith(JUnitParamsRunner.class)
 public class ElevatorEngineTest {
-
-    private static final Direction SOME_DIRECTION = Direction.UP;
-    private static final Floor ANY_FLOOR = Floor.ofLevel(1);
 
     private EventLogger logger = mock(EventLogger.class);
     private EngineListener engineSensor = mock(EngineListener.class);
 
-    private Engine engine = new ElevatorEngine(logger);
+    private ElevatorEngine engine = new ElevatorEngine(logger);
 
     @Before
     public void setUp() {
@@ -30,39 +27,39 @@ public class ElevatorEngineTest {
     }
 
     @Test
-    public void shouldLogEngineStartedEvent() {
-
-        engine.start(ANY_FLOOR, SOME_DIRECTION);
-
-        verify(logger).logEvent(eq(
-                new EngineStartedEvent(SOME_DIRECTION)));
-    }
-
-    @Test
-    public void shouldLogReachingNextFloorEvent() {
+    public void shouldStartEngineWithoutMoving() {
 
         Floor currentLevel = Floor.ofLevel(1);
+
         engine.start(currentLevel, Direction.UP);
 
-        verify(logger).logEvent(
-                new FloorReachedEvent(currentLevel.nextFloor().level()));
+        verifyZeroInteractions(engineSensor);
     }
 
     @Test
-    public void shouldNotifyAboutReachingNextFloor() {
+    @Parameters({"-1", "0", "1", "2", "3"})
+    public void shouldMoveUpToNextFloor(int level) {
 
-        Floor currentLevel = Floor.ofLevel(1);
-        engine.start(currentLevel, Direction.UP);
+        Floor startFloor = Floor.ofLevel(level);
 
-        verify(engineSensor).floorReached(currentLevel.nextFloor());
+        engine.start(startFloor, Direction.UP);
+        engine.step();
+
+        verify(engineSensor).floorReached(Floor.ofLevel(level + 1));
     }
 
     @Test
-    public void shouldLogEngineStoppedEvent() {
+    @Parameters({"-1", "0", "1", "2", "3"})
+    public void shouldMoveUpToSecondNextFloor(int level) {
 
-        engine.stop();
+        Floor startFloor = Floor.ofLevel(level);
 
-        verify(logger).logEvent(isA(EngineStoppedEvent.class));
+        engine.start(startFloor, Direction.UP);
+        engine.step();
+        engine.step();
+
+        verify(engineSensor).floorReached(Floor.ofLevel(level + 1));
+        verify(engineSensor).floorReached(Floor.ofLevel(level + 2));
     }
 
     @Test
@@ -70,6 +67,17 @@ public class ElevatorEngineTest {
 
         engine.stop();
 
+        verify(logger).logEvent(isA(EngineStoppedEvent.class));
         verify(engineSensor).engineStopped();
+    }
+
+    @Test
+    public void shouldNotMoveWhenStopped() {
+
+        engine.start(Floor.ofLevel(3), Direction.UP);
+        engine.stop();
+        engine.step();
+
+        verify(engineSensor, times(0)).floorReached(any(Floor.class));
     }
 }

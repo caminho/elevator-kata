@@ -6,7 +6,7 @@ import pragmatists.elevator.Floor;
 public interface Engine {
     void start(Floor of, Direction direction);
 
-    void setListener(EngineListener engineSensor);
-
     void stop();
+
+    void setListener(EngineListener engineSensor);
 }

@@ -1,16 +1,19 @@
 package pragmatists.elevator;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.DoorState;
 import pragmatists.elevator.engine.Engine;
-import pragmatists.elevator.door.Door;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+@RunWith(JUnitParamsRunner.class)
 public class ElevatorTest {
 
     private static final int ANY_FLOOR_LEVEL = 5;
@@ -21,7 +24,7 @@ public class ElevatorTest {
     private ElevatorBuilder anElevator() {
         return ElevatorBuilder.anElevator(door, engine);
     }
-    
+
     @Test
     public void shouldRegisterItselfToCollaborators() {
 
@@ -52,14 +55,20 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldStartEngineWhenFloorRequestedAndDoorClosed() {
+    @Parameters({
+            "0, 1, UP", "0, 2, UP", "2, 3, UP",
+            "0, -1, DOWN", "3, -2, DOWN", "5, 4, DOWN"
+    })
+    public void shouldStartEngineInCorrectDirectionWhenFloorRequestedAndDoorClosed(
+            int startingLevel, int targetLevel, Direction expectedDirection) {
 
-        Elevator elevator = anElevator().build();
+        Elevator elevator = anElevator()
+                .startingAt(startingLevel).build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(targetLevel));
         elevator.doorStateChanged(DoorState.CLOSED);
 
-        verify(engine).start(eq(Floor.ofLevel(0)), any(Direction.class));
+        verify(engine).start(eq(Floor.ofLevel(startingLevel)), eq(expectedDirection));
     }
 
     @Test

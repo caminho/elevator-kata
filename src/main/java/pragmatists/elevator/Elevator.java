@@ -23,6 +23,11 @@ public class Elevator implements
         this.engine.setListener(this);
     }
 
+    public Elevator(Door door, Engine engine, Floor startingFloor) {
+        this(door, engine);
+        this.currentFloor = startingFloor;
+    }
+
     public void run() {
         door.open();
     }
@@ -35,7 +40,15 @@ public class Elevator implements
 
     @Override
     public void doorStateChanged(DoorState doorState) {
-        engine.start(currentFloor, Direction.UP);
+        if (requestedFloor == null) {
+            return;
+        }
+        if (requestedFloor.isGreaterThan(currentFloor)) {
+            engine.start(currentFloor, Direction.UP);
+        }
+        if (requestedFloor.isLowerThan(currentFloor)) {
+            engine.start(currentFloor, Direction.DOWN);
+        }
     }
 
     @Override

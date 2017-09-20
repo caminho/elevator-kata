@@ -42,4 +42,12 @@ public class Floor {
                 "level=" + level +
                 '}';
     }
+
+    public boolean isGreaterThan(Floor floor) {
+        return level > floor.level;
+    }
+
+    public boolean isLowerThan(Floor floor) {
+        return level < floor.level;
+    }
 }

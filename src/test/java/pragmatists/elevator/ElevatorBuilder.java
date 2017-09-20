@@ -6,6 +6,7 @@ import pragmatists.elevator.engine.Engine;
 final class ElevatorBuilder {
     private Door door;
     private Engine engine;
+    private Floor startingFloor = new Floor(0);
 
     private ElevatorBuilder(Door door, Engine engine) {
         this.door = door;
@@ -16,7 +17,12 @@ final class ElevatorBuilder {
         return new ElevatorBuilder(door, engine);
     }
 
+    ElevatorBuilder startingAt(int startingLevel) {
+        this.startingFloor = new Floor(startingLevel);
+        return this;
+    }
+
     Elevator build() {
-        return new Elevator(door, engine);
+        return new Elevator(door, engine, startingFloor);
     }
 }

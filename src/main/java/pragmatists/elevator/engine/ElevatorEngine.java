@@ -11,6 +11,8 @@ public class ElevatorEngine implements Engine {
 
     private final EventLogger logger;
     private EngineListener engineSensor;
+    private Floor floor;
+    private Direction direction;
 
     public ElevatorEngine(EventLogger logger) {
         this.logger = logger;
@@ -19,13 +21,8 @@ public class ElevatorEngine implements Engine {
     @Override
     public void start(Floor startingFloor, Direction direction) {
         logger.logEvent(new EngineStartedEvent(direction));
-
-        // moving to the next level
-        Floor nextFloor = startingFloor.nextFloor();
-        logger.logEvent(new FloorReachedEvent(nextFloor.level()));
-        if (engineSensor != null) {
-            engineSensor.floorReached(nextFloor);
-        }
+        this.floor = startingFloor;
+        this.direction = direction;
     }
 
     @Override
@@ -38,6 +35,18 @@ public class ElevatorEngine implements Engine {
         logger.logEvent(new EngineStoppedEvent());
         if (engineSensor != null) {
             engineSensor.engineStopped();
+            floor = null;
+            direction = null;
+        }
+    }
+
+    public void step() {
+        if (floor != null && direction != null) {
+            floor = floor.nextFloor();
+            logger.logEvent(new FloorReachedEvent(floor.level()));
+            if (engineSensor != null) {
+                engineSensor.floorReached(floor);
+            }
         }
     }
 }

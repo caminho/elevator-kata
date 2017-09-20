@@ -24,4 +24,11 @@ public class EngineStartedEvent extends ElevatorEvent {
     public int hashCode() {
         return direction != null ? direction.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "EngineStartedEvent{" +
+                "direction=" + direction +
+                '}';
+    }
 }

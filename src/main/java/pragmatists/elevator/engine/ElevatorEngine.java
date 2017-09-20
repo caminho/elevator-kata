@@ -41,12 +41,18 @@ public class ElevatorEngine implements Engine {
     }
 
     public void step() {
-        if (floor != null && direction != null) {
+        if (floor == null || direction == null) {
+            return;
+        }
+        if (direction == Direction.UP) {
             floor = floor.nextFloor();
-            logger.logEvent(new FloorReachedEvent(floor.level()));
-            if (engineSensor != null) {
-                engineSensor.floorReached(floor);
-            }
+        }
+        if (direction == Direction.DOWN) {
+            floor = floor.previousFloor();
+        }
+        logger.logEvent(new FloorReachedEvent(floor.level()));
+        if (engineSensor != null) {
+            engineSensor.floorReached(floor);
         }
     }
 }

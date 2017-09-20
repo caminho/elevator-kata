@@ -38,28 +38,54 @@ public class ElevatorEngineTest {
 
     @Test
     @Parameters({"-1", "0", "1", "2", "3"})
-    public void shouldMoveUpToNextFloor(int level) {
+    public void shouldMoveUpToNextFloor(int startLevel) {
 
-        Floor startFloor = Floor.ofLevel(level);
+        Floor startFloor = Floor.ofLevel(startLevel);
 
         engine.start(startFloor, Direction.UP);
         engine.step();
 
-        verify(engineSensor).floorReached(Floor.ofLevel(level + 1));
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel + 1));
     }
 
     @Test
     @Parameters({"-1", "0", "1", "2", "3"})
-    public void shouldMoveUpToSecondNextFloor(int level) {
+    public void shouldMoveDownToPreviousFloor(int startLevel) {
 
-        Floor startFloor = Floor.ofLevel(level);
+        Floor startFloor = Floor.ofLevel(startLevel);
+
+        engine.start(startFloor, Direction.DOWN);
+        engine.step();
+
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel - 1));
+    }
+
+    @Test
+    @Parameters({"-1", "0", "1", "2", "3"})
+    public void shouldMoveUpToSecondNextFloor(int startLevel) {
+
+        Floor startFloor = Floor.ofLevel(startLevel);
 
         engine.start(startFloor, Direction.UP);
         engine.step();
         engine.step();
 
-        verify(engineSensor).floorReached(Floor.ofLevel(level + 1));
-        verify(engineSensor).floorReached(Floor.ofLevel(level + 2));
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel + 1));
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel + 2));
+    }
+
+    @Test
+    @Parameters({"-1", "0", "1", "2", "3"})
+    public void shouldMoveDownToSecondPreviousFloor(int startLevel) {
+
+        Floor startFloor = Floor.ofLevel(startLevel);
+
+        engine.start(startFloor, Direction.DOWN);
+        engine.step();
+        engine.step();
+
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel - 1));
+        verify(engineSensor).floorReached(Floor.ofLevel(startLevel - 2));
     }
 
     @Test

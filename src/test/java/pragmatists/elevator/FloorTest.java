@@ -21,12 +21,21 @@ public class FloorTest {
     }
 
     @Test
-    public void shouldDefineNextFloor() {
+    public void shouldReturnNextFloor() {
 
         Floor floor = Floor.ofLevel(SOME_LEVEL);
 
         assertThat(floor.nextFloor())
                 .isEqualTo(Floor.ofLevel(SOME_LEVEL + 1));
+    }
+
+    @Test
+    public void shouldReturnPreviousFloor() {
+
+        Floor floor = Floor.ofLevel(SOME_LEVEL);
+
+        assertThat(floor.previousFloor())
+                .isEqualTo(Floor.ofLevel(SOME_LEVEL - 1));
     }
 
     @Test

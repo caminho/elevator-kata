@@ -19,6 +19,18 @@ public class Floor {
         return Floor.ofLevel(level + 1);
     }
 
+    public Floor previousFloor() {
+        return Floor.ofLevel(level - 1);
+    }
+
+    public boolean isGreaterThan(Floor floor) {
+        return level > floor.level;
+    }
+
+    public boolean isLowerThan(Floor floor) {
+        return level < floor.level;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -41,13 +53,5 @@ public class Floor {
         return "Floor{" +
                 "level=" + level +
                 '}';
-    }
-
-    public boolean isGreaterThan(Floor floor) {
-        return level > floor.level;
-    }
-
-    public boolean isLowerThan(Floor floor) {
-        return level < floor.level;
     }
 }

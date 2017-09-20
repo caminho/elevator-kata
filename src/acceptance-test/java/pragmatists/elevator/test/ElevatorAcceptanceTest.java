@@ -69,8 +69,12 @@ public class ElevatorAcceptanceTest {
 
         elevator.thenDoorClosed();
         elevator.thenEngineStarted(Direction.DOWN);
+
+        elevator.makeEngineStep();
         elevator.thenFloorReached(2);
+        elevator.makeEngineStep();
         elevator.thenFloorReached(1);
+        elevator.makeEngineStep();
         elevator.thenEngineStopped();
 
         elevator.makeDoorStep();

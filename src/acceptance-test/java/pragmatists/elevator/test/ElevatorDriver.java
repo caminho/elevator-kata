@@ -52,24 +52,29 @@ public class ElevatorDriver {
     }
 
     void thenDoorOpened() {
+        makeDoorStep();
         assertThat(nextEvent()).isInstanceOf(DoorOpenEvent.class);
     }
 
     void thenDoorClosed() {
+        makeDoorStep();
         assertThat(nextEvent()).isInstanceOf(DoorClosedEvent.class);
     }
 
     void thenEngineStarted(Direction direction) {
+        makeEngineStep();
         assertThat(nextEvent()).isInstanceOf(EngineStartedEvent.class)
                 .isEqualTo(new EngineStartedEvent(direction));
 
     }
 
     void thenEngineStopped() {
+        makeEngineStep();
         assertThat(nextEvent()).isInstanceOf(EngineStoppedEvent.class);
     }
 
     void thenFloorReached(int level) {
+        makeEngineStep();
         assertThat(nextEvent()).isInstanceOf(FloorReachedEvent.class)
                 .isEqualTo(new FloorReachedEvent(level));
     }
@@ -78,11 +83,11 @@ public class ElevatorDriver {
         return eventQueue.poll();
     }
 
-    void makeDoorStep() {
+    private void makeDoorStep() {
         door.moveIfRequested();
     }
 
-    void makeEngineStep() {
+    private void makeEngineStep() {
         engine.step();
     }
 }

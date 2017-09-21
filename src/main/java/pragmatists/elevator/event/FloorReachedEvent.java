@@ -22,4 +22,11 @@ public class FloorReachedEvent extends ElevatorEvent {
     public int hashCode() {
         return level;
     }
+
+    @Override
+    public String toString() {
+        return "FloorReachedEvent{" +
+                "level=" + level +
+                '}';
+    }
 }

@@ -1,5 +1,5 @@
 package pragmatists.elevator;
 
 public enum Direction {
-    UP, DOWN
+    UP, NONE, DOWN
 }

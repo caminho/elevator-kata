@@ -32,27 +32,34 @@ public class ElevatorEngine implements Engine {
 
     @Override
     public void stop() {
+        direction = Direction.NONE;
         logger.logEvent(new EngineStoppedEvent());
         if (engineSensor != null) {
             engineSensor.engineStopped();
-            floor = null;
-            direction = null;
         }
     }
 
     public void step() {
-        if (floor == null || direction == null) {
+        if (notMoving()) {
             return;
         }
+        goToNextFloor();
+        logger.logEvent(new FloorReachedEvent(floor.level()));
+        if (engineSensor != null) {
+            engineSensor.floorReached(floor);
+        }
+    }
+
+    private void goToNextFloor() {
         if (direction == Direction.UP) {
             floor = floor.nextFloor();
         }
         if (direction == Direction.DOWN) {
             floor = floor.previousFloor();
         }
-        logger.logEvent(new FloorReachedEvent(floor.level()));
-        if (engineSensor != null) {
-            engineSensor.floorReached(floor);
-        }
+    }
+
+    private boolean notMoving() {
+        return direction == Direction.NONE;
     }
 }

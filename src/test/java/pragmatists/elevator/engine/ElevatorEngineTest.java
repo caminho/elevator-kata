@@ -2,6 +2,7 @@ package pragmatists.elevator.engine;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
 import pragmatists.elevator.event.EngineStoppedEvent;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -105,5 +107,15 @@ public class ElevatorEngineTest {
         engine.step();
 
         verify(engineSensor, times(0)).floorReached(any(Floor.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenStartedAgain() {
+
+        engine.start(Floor.ofLevel(2), Direction.UP);
+
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
+                engine.start(Floor.ofLevel(4), Direction.DOWN)
+        );
     }
 }

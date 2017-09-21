@@ -11,8 +11,9 @@ public class ElevatorEngine implements Engine {
 
     private final EventLogger logger;
     private EngineListener engineSensor;
+
     private Floor floor;
-    private Direction direction;
+    private Direction direction = Direction.NONE;
 
     public ElevatorEngine(EventLogger logger) {
         this.logger = logger;
@@ -20,9 +21,12 @@ public class ElevatorEngine implements Engine {
 
     @Override
     public void start(Floor startingFloor, Direction direction) {
-        logger.logEvent(new EngineStartedEvent(direction));
+        if (elevatorIsMoving()) {
+            throw new IllegalStateException();
+        }
         this.floor = startingFloor;
         this.direction = direction;
+        notifyEngineStarted();
     }
 
     @Override
@@ -33,17 +37,28 @@ public class ElevatorEngine implements Engine {
     @Override
     public void stop() {
         direction = Direction.NONE;
+        notifyElevatorStopped();
+    }
+
+    public void step() {
+        if (elevatorIsMoving()) {
+            goToNextFloor();
+            notifyElevatorMoved();
+        }
+    }
+
+    private void notifyEngineStarted() {
+        logger.logEvent(new EngineStartedEvent(direction));
+    }
+
+    private void notifyElevatorStopped() {
         logger.logEvent(new EngineStoppedEvent());
         if (engineSensor != null) {
             engineSensor.engineStopped();
         }
     }
 
-    public void step() {
-        if (notMoving()) {
-            return;
-        }
-        goToNextFloor();
+    private void notifyElevatorMoved() {
         logger.logEvent(new FloorReachedEvent(floor.level()));
         if (engineSensor != null) {
             engineSensor.floorReached(floor);
@@ -51,15 +66,17 @@ public class ElevatorEngine implements Engine {
     }
 
     private void goToNextFloor() {
-        if (direction == Direction.UP) {
-            floor = floor.nextFloor();
-        }
-        if (direction == Direction.DOWN) {
-            floor = floor.previousFloor();
+        switch (direction) {
+            case UP:
+                floor = floor.nextFloor();
+                break;
+            case DOWN:
+                floor = floor.previousFloor();
+                break;
         }
     }
 
-    private boolean notMoving() {
-        return direction == Direction.NONE;
+    private boolean elevatorIsMoving() {
+        return direction != Direction.NONE;
     }
 }

@@ -72,52 +72,52 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldStopEngineWhenRequestedFloorReached() {
+    @Parameters({"1", "2", "3"})
+    public void shouldStopEngineWhenRequestedFloorReached(int requestedLevel) {
 
         Elevator elevator = anElevator().build();
-        Floor requestedFloor = Floor.ofLevel(1);
 
-        elevator.floorRequested(requestedFloor);
-        elevator.floorReached(requestedFloor);
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(requestedLevel));
 
         verify(engine).stop();
     }
 
     @Test
-    public void shouldNotStopEngineWhenReachedNotRequestedFloor() {
+    @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
+    public void shouldNotStopEngineWhenReachedNotRequestedFloor(
+            int requestedLevel, int middleLevel) {
 
         Elevator elevator = anElevator().build();
-        Floor requestedFloor = Floor.ofLevel(2);
-        Floor reachedFloor = Floor.ofLevel(1);
 
-        elevator.floorRequested(requestedFloor);
-        elevator.floorReached(reachedFloor);
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(middleLevel));
 
         verify(engine, times(0)).stop();
     }
 
     @Test
-    public void shouldOpenDoorAfterStopAtRequestedLevel() {
+    @Parameters({"1", "2", "3"})
+    public void shouldOpenDoorAfterStopAtRequestedLevel(int requestedLevel) {
 
         Elevator elevator = anElevator().build();
-        Floor requestedFloor = Floor.ofLevel(1);
 
-        elevator.floorRequested(requestedFloor);
-        elevator.floorReached(requestedFloor);
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(requestedLevel));
         elevator.engineStopped();
 
         verify(door).open();
     }
 
     @Test
-    public void shouldNotOpenDoorWhenStopAtNotRequestedLevel() {
+    @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
+    public void shouldNotOpenDoorWhenStopAtNotRequestedLevel(
+            int requestedLevel, int middleLevel) {
 
         Elevator elevator = anElevator().build();
-        Floor requestedFloor = Floor.ofLevel(2);
-        Floor reachedLevel = Floor.ofLevel(1);
 
-        elevator.floorRequested(requestedFloor);
-        elevator.floorReached(reachedLevel);
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(middleLevel));
         elevator.engineStopped();
 
         verify(door, times(0)).open();

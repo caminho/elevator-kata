@@ -22,7 +22,7 @@ public class ElevatorEngine implements Engine {
     @Override
     public void start(Floor startingFloor, Direction direction) {
         if (elevatorIsMoving()) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("elevator is moving");
         }
         this.floor = startingFloor;
         this.direction = direction;

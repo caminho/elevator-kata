@@ -2,13 +2,12 @@ package pragmatists.elevator.engine;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pragmatists.elevator.Direction;
 import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
+import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.event.EngineStoppedEvent;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

@@ -1,4 +1,4 @@
 package pragmatists.elevator.event;
 
-public class ElevatorEvent {
+public abstract class ElevatorEvent {
 }

@@ -1,10 +1,7 @@
 package pragmatists.elevator.test;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import pragmatists.elevator.Direction;
-
-import static pragmatists.elevator.Direction.UP;
+import pragmatists.elevator.engine.Engine.Direction;
 
 public class ElevatorAcceptanceTest {
 
@@ -26,7 +23,7 @@ public class ElevatorAcceptanceTest {
         // go to 1st floor
         elevator.whenButtonPressed(1);
         elevator.thenDoorClosed();
-        elevator.thenEngineStarted(UP);
+        elevator.thenEngineStarted(Direction.UP);
         elevator.thenFloorReached(1);
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
@@ -41,7 +38,7 @@ public class ElevatorAcceptanceTest {
         // go to 3rd floor
         elevator.whenButtonPressed(3);
         elevator.thenDoorClosed();
-        elevator.thenEngineStarted(UP);
+        elevator.thenEngineStarted(Direction.UP);
         elevator.thenFloorReached(1);
         elevator.thenFloorReached(2);
         elevator.thenFloorReached(3);
@@ -69,7 +66,7 @@ public class ElevatorAcceptanceTest {
         elevator.whenButtonPressed(2);
         elevator.whenButtonPressed(5);
         elevator.thenDoorClosed();
-        elevator.thenEngineStarted(UP);
+        elevator.thenEngineStarted(Direction.UP);
 
         // cross 1st floor
         elevator.thenFloorReached(1);
@@ -79,7 +76,7 @@ public class ElevatorAcceptanceTest {
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
         elevator.thenDoorClosed();
-        elevator.thenEngineStarted(UP);
+        elevator.thenEngineStarted(Direction.UP);
 
         // cross 3rd floor
         elevator.thenFloorReached(3);
@@ -89,7 +86,7 @@ public class ElevatorAcceptanceTest {
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
         elevator.thenDoorClosed();
-        elevator.thenEngineStarted(UP);
+        elevator.thenEngineStarted(Direction.UP);
 
         // stop at floor 5
         elevator.thenFloorReached(5);

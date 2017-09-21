@@ -1,6 +1,5 @@
 package pragmatists.elevator.engine;
 
-import pragmatists.elevator.Direction;
 import pragmatists.elevator.EventLogger;
 import pragmatists.elevator.Floor;
 import pragmatists.elevator.event.EngineStartedEvent;

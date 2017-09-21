@@ -1,9 +1,10 @@
 package pragmatists.elevator;
 
 import pragmatists.elevator.door.Door;
+import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.door.DoorListener;
-import pragmatists.elevator.door.DoorState;
 import pragmatists.elevator.engine.Engine;
+import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.engine.EngineListener;
 import pragmatists.elevator.panel.ButtonListener;
 

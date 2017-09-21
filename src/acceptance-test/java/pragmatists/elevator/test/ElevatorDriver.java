@@ -2,14 +2,13 @@ package pragmatists.elevator.test;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import pragmatists.elevator.Elevator;
+import pragmatists.elevator.door.ElevatorDoor;
 import pragmatists.elevator.door.LazyDoorDriver;
 import pragmatists.elevator.engine.ElevatorEngine;
-import pragmatists.elevator.engine.Engine;
-import pragmatists.elevator.door.ElevatorDoor;
-import pragmatists.elevator.panel.ButtonPanel;
-import pragmatists.elevator.Direction;
-import pragmatists.elevator.Elevator;
+import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.event.*;
+import pragmatists.elevator.panel.ButtonPanel;
 import pragmatists.elevator.panel.ElevatorButtonPanel;
 
 import java.util.LinkedList;

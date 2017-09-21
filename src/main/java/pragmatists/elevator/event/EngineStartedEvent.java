@@ -1,6 +1,6 @@
 package pragmatists.elevator.event;
 
-import pragmatists.elevator.Direction;
+import pragmatists.elevator.engine.Engine.Direction;
 
 public class EngineStartedEvent extends ElevatorEvent {
 

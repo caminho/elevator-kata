@@ -3,6 +3,7 @@ package pragmatists.elevator.door;
 import org.junit.Before;
 import org.junit.Test;
 import pragmatists.elevator.EventLogger;
+import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.event.DoorClosedEvent;
 import pragmatists.elevator.event.DoorOpenEvent;
 

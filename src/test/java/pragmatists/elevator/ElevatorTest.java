@@ -5,8 +5,9 @@ import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pragmatists.elevator.door.Door;
-import pragmatists.elevator.door.DoorState;
+import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.engine.Engine;
+import pragmatists.elevator.engine.Engine.Direction;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;

@@ -6,4 +6,9 @@ public interface Door {
     void open();
 
     void setListener(DoorListener doorListener);
+
+    enum DoorState {
+        CLOSED
+    }
+
 }

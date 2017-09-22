@@ -62,12 +62,12 @@ public class Elevator implements
             door.close();
 
         } else if (state == ElevatorState.GOING_UP) {
+            requestedFloors.add(floor);
+            requestedFloor = requestedFloors.first();
 
-            if (floor.isGreaterThan(currentFloor)) {
-
-                requestedFloors.add(floor);
-                requestedFloor = requestedFloors.first();
-            }
+        } else if (state == ElevatorState.GOING_DOWN) {
+            requestedFloors.add(floor);
+            requestedFloor = requestedFloors.last();
         }
     }
 

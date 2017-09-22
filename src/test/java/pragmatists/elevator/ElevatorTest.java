@@ -63,13 +63,17 @@ public class ElevatorTest {
         elevator.floorRequested(Floor.ofLevel(4));
         elevator.floorRequested(Floor.ofLevel(5));
 
-        verify(door).close();
+        verify(door, times(1)).close();
     }
 
     @Test
     @Parameters({
-            "0, 1, UP", "0, 2, UP", "2, 3, UP",
-            "0, -1, DOWN", "3, -2, DOWN", "5, 4, DOWN"
+            "0, 1,  UP",
+            "0, 2,  UP",
+            "2, 3,  UP",
+            "0, -1, DOWN",
+            "3, -2, DOWN",
+            "5, 4,  DOWN"
     })
     public void shouldStartEngineInCorrectDirectionWhenFloorRequestedAndDoorClosed(
             int startingLevel, int targetLevel, Direction expectedDirection) {
@@ -84,25 +88,20 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldStopEngineAtNearestRequestedFloorWhenRequestedInAscOrder() {
+    @Parameters({
+            "3, 4, 5, 4",
+            "3, 5, 4, 4",
+            "6, 4, 5, 5",
+            "6, 5, 4, 5",
+    })
+    public void shouldStopEngineAtNearestRequestedFloor(
+            int startLevel, int firstRequest, int secondRequest, int reached) {
 
-        Elevator elevator = anElevator().startingAt(3).build();
+        Elevator elevator = anElevator().startingAt(startLevel).build();
 
-        elevator.floorRequested(Floor.ofLevel(4));
-        elevator.floorRequested(Floor.ofLevel(5));
-        elevator.floorReached(Floor.ofLevel(4));
-
-        verify(engine).stop();
-    }
-
-    @Test
-    public void shouldStopEngineAtNearestRequestedFloorWhenRequestedInDescOrder() {
-
-        Elevator elevator = anElevator().startingAt(3).build();
-
-        elevator.floorRequested(Floor.ofLevel(5));
-        elevator.floorRequested(Floor.ofLevel(4));
-        elevator.floorReached(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.floorReached(Floor.ofLevel(reached));
 
         verify(engine).stop();
     }
@@ -121,7 +120,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
-    public void shouldNotStopEngineWhenReachedNotRequestedFloor(
+    public void shouldNotStopEngineWhenReachedMiddleFloor(
             int requestedLevel, int middleLevel) {
 
         Elevator elevator = anElevator().build();

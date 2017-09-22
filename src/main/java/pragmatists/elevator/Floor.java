@@ -1,6 +1,6 @@
 package pragmatists.elevator;
 
-public class Floor {
+public class Floor implements Comparable<Floor> {
     private final int level;
 
     public Floor(int level) {
@@ -24,11 +24,16 @@ public class Floor {
     }
 
     public boolean isGreaterThan(Floor floor) {
-        return level > floor.level;
+        return compareTo(floor) > 0;
     }
 
     public boolean isLowerThan(Floor floor) {
-        return level < floor.level;
+        return compareTo(floor) < 0;
+    }
+
+    @Override
+    public int compareTo(Floor floor) {
+        return Integer.compare(level, floor.level);
     }
 
     @Override

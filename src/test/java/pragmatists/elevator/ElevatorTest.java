@@ -84,12 +84,24 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldStopEngineAtFirstRequestedFloor() {
+    public void shouldStopEngineAtNearestRequestedFloorWhenRequestedInAscOrder() {
 
         Elevator elevator = anElevator().startingAt(3).build();
 
         elevator.floorRequested(Floor.ofLevel(4));
         elevator.floorRequested(Floor.ofLevel(5));
+        elevator.floorReached(Floor.ofLevel(4));
+
+        verify(engine).stop();
+    }
+
+    @Test
+    public void shouldStopEngineAtNearestRequestedFloorWhenRequestedInDescOrder() {
+
+        Elevator elevator = anElevator().startingAt(3).build();
+
+        elevator.floorRequested(Floor.ofLevel(5));
+        elevator.floorRequested(Floor.ofLevel(4));
         elevator.floorReached(Floor.ofLevel(4));
 
         verify(engine).stop();

@@ -1,5 +1,6 @@
 package pragmatists.elevator;
 
+import com.google.common.collect.Sets;
 import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.door.DoorListener;
@@ -7,6 +8,8 @@ import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.engine.EngineListener;
 import pragmatists.elevator.panel.ButtonListener;
+
+import java.util.TreeSet;
 
 public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
@@ -19,6 +22,8 @@ public class Elevator implements
     private final Engine engine;
 
     private Floor currentFloor = Floor.ofLevel(0);
+
+    private TreeSet<Floor> requestedFloors = Sets.newTreeSet();
     private Floor requestedFloor;
 
     private ElevatorState state = ElevatorState.WAITING;
@@ -41,16 +46,28 @@ public class Elevator implements
 
     @Override
     public void floorRequested(Floor floor) {
-        this.requestedFloor = floor;
-
         if (state == ElevatorState.WAITING) {
-            if (requestedFloor.isGreaterThan(currentFloor)) {
+            assert requestedFloors.isEmpty();
+
+            requestedFloor = floor;
+            requestedFloors.add(floor);
+
+            if (floor.isGreaterThan(currentFloor)) {
                 state = ElevatorState.GOING_UP;
             }
-            if (requestedFloor.isLowerThan(currentFloor)) {
+            if (floor.isLowerThan(currentFloor)) {
                 state = ElevatorState.GOING_DOWN;
             }
+
             door.close();
+
+        } else if (state == ElevatorState.GOING_UP) {
+
+            if (floor.isGreaterThan(currentFloor)) {
+
+                requestedFloors.add(floor);
+                requestedFloor = requestedFloors.first();
+            }
         }
     }
 

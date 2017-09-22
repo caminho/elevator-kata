@@ -1,9 +1,12 @@
 package pragmatists.elevator;
 
+import com.google.common.collect.Sets;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,5 +61,22 @@ public class FloorTest {
 
         assertThat(lowerFloor.isLowerThan(greaterFloor)).isTrue();
         assertThat(greaterFloor.isLowerThan(lowerFloor)).isFalse();
+    }
+
+    @Test
+    public void shouldImplementComparable() {
+
+        TreeSet<Floor> floorsInOrder = Sets.newTreeSet();
+
+        floorsInOrder.add(Floor.ofLevel(5));
+        floorsInOrder.add(Floor.ofLevel(2));
+        floorsInOrder.add(Floor.ofLevel(4));
+
+        assertThat(floorsInOrder.pollFirst())
+                .isEqualTo(Floor.ofLevel(2));
+        assertThat(floorsInOrder.pollFirst())
+                .isEqualTo(Floor.ofLevel(4));
+        assertThat(floorsInOrder.pollFirst())
+                .isEqualTo(Floor.ofLevel(5));
     }
 }

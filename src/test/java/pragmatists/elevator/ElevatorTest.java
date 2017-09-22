@@ -88,6 +88,18 @@ public class ElevatorTest {
     }
 
     @Test
+    @Parameters({"1", "2", "3"})
+    public void shouldStopEngineWhenRequestedFloorReached(int requestedLevel) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
+        elevator.floorReached(Floor.ofLevel(requestedLevel));
+
+        verify(engine).stop();
+    }
+
+    @Test
     @Parameters({
             "3, 4, 5, 4",
             "3, 5, 4, 4",
@@ -107,18 +119,6 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"1", "2", "3"})
-    public void shouldStopEngineWhenRequestedFloorReached(int requestedLevel) {
-
-        Elevator elevator = anElevator().build();
-
-        elevator.floorRequested(Floor.ofLevel(requestedLevel));
-        elevator.floorReached(Floor.ofLevel(requestedLevel));
-
-        verify(engine).stop();
-    }
-
-    @Test
     @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
     public void shouldNotStopEngineWhenReachedMiddleFloor(
             int requestedLevel, int middleLevel) {
@@ -127,6 +127,25 @@ public class ElevatorTest {
 
         elevator.floorRequested(Floor.ofLevel(requestedLevel));
         elevator.floorReached(Floor.ofLevel(middleLevel));
+
+        verify(engine, times(0)).stop();
+    }
+
+    @Test
+    @Parameters({
+            "2, 4, 5, 3",
+            "2, 5, 4, 3",
+            "7, 4, 5, 6",
+            "7, 5, 4, 6",
+    })
+    public void shouldNotStopEngineWhenReachedMiddleFloorWhenMultipleFloorsRequested(
+            int startLevel, int firstRequest, int secondRequest, int reached) {
+
+        Elevator elevator = anElevator().startingAt(startLevel).build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.floorReached(Floor.ofLevel(reached));
 
         verify(engine, times(0)).stop();
     }
@@ -146,7 +165,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
-    public void shouldNotOpenDoorWhenStopAtNotRequestedLevel(
+    public void shouldNotOpenDoorWhenStopAtMiddleLevel(
             int requestedLevel, int middleLevel) {
 
         Elevator elevator = anElevator().build();

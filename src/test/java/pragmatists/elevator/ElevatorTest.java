@@ -56,6 +56,17 @@ public class ElevatorTest {
     }
 
     @Test
+    public void shouldCloseDoorOnceWhenFloorRequestedMultipleTimes() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(5));
+
+        verify(door).close();
+    }
+
+    @Test
     @Parameters({
             "0, 1, UP", "0, 2, UP", "2, 3, UP",
             "0, -1, DOWN", "3, -2, DOWN", "5, 4, DOWN"
@@ -70,6 +81,18 @@ public class ElevatorTest {
         elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(eq(Floor.ofLevel(startingLevel)), eq(expectedDirection));
+    }
+
+    @Test
+    public void shouldStopEngineAtFirstRequestedFloor() {
+
+        Elevator elevator = anElevator().startingAt(3).build();
+
+        elevator.floorRequested(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(5));
+        elevator.floorReached(Floor.ofLevel(4));
+
+        verify(engine).stop();
     }
 
     @Test

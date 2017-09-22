@@ -11,11 +11,17 @@ import pragmatists.elevator.panel.ButtonListener;
 public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
 
+    private enum ElevatorState {
+        GOING_UP, GOING_DOWN, WAITING
+    }
+
     private final Door door;
     private final Engine engine;
 
     private Floor currentFloor = Floor.ofLevel(0);
     private Floor requestedFloor;
+
+    private ElevatorState state = ElevatorState.WAITING;
 
     public Elevator(Door door, Engine engine) {
         this.door = door;
@@ -36,7 +42,16 @@ public class Elevator implements
     @Override
     public void floorRequested(Floor floor) {
         this.requestedFloor = floor;
-        door.close();
+
+        if (state == ElevatorState.WAITING) {
+            if (requestedFloor.isGreaterThan(currentFloor)) {
+                state = ElevatorState.GOING_UP;
+            }
+            if (requestedFloor.isLowerThan(currentFloor)) {
+                state = ElevatorState.GOING_DOWN;
+            }
+            door.close();
+        }
     }
 
     @Override
@@ -44,12 +59,17 @@ public class Elevator implements
         if (requestedFloor == null) {
             return;
         }
-        if (requestedFloor.isGreaterThan(currentFloor)) {
-            engine.start(currentFloor, Direction.UP);
+        engine.start(currentFloor, requestedDirection());
+    }
+
+    private Direction requestedDirection() {
+        if (state == ElevatorState.GOING_UP) {
+            return Direction.UP;
         }
-        if (requestedFloor.isLowerThan(currentFloor)) {
-            engine.start(currentFloor, Direction.DOWN);
+        if (state == ElevatorState.GOING_DOWN) {
+            return Direction.DOWN;
         }
+        return Direction.NONE;
     }
 
     @Override
@@ -69,5 +89,12 @@ public class Elevator implements
 
     private boolean atRequestedFloor() {
         return currentFloor.equals(requestedFloor);
+    }
+
+    @Override
+    public String toString() {
+        return "Elevator{" +
+                "currentFloor=" + currentFloor +
+                '}';
     }
 }

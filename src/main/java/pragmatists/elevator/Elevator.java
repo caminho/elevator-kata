@@ -15,7 +15,23 @@ public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
 
     private enum ElevatorState {
-        GOING_UP, GOING_DOWN, WAITING
+        GOING_UP{
+            public Direction direction() {
+                return Direction.UP;
+            }
+        },
+        GOING_DOWN {
+            public Direction direction() {
+                return Direction.DOWN;
+            }
+        },
+        WAITING {
+            public Direction direction() {
+                return Direction.NONE;
+            }
+        };
+
+        public abstract Direction direction();
     }
 
     private final Door door;
@@ -23,7 +39,10 @@ public class Elevator implements
 
     private Floor currentFloor = Floor.ofLevel(0);
 
-    private TreeSet<Floor> requestedFloors = Sets.newTreeSet();
+
+    private TreeSet<Floor> requestedFloorsUp = Sets.newTreeSet();
+    private TreeSet<Floor> requestedFloorsDown = Sets.newTreeSet();
+
     private Floor requestedFloor;
 
     private ElevatorState state = ElevatorState.WAITING;
@@ -45,29 +64,46 @@ public class Elevator implements
     }
 
     @Override
-    public void floorRequested(Floor floor) {
+    public void floorRequested(Floor requestedFloor) {
         if (state == ElevatorState.WAITING) {
-            assert requestedFloors.isEmpty();
+            assert requestedFloorsDown.isEmpty();
+            assert requestedFloorsUp.isEmpty();
 
-            requestedFloor = floor;
-            requestedFloors.add(floor);
+            this.requestedFloor = requestedFloor;
+            //requestedFloors.add(requestedFloor);
 
-            if (floor.isGreaterThan(currentFloor)) {
+            if (requestedFloor.isGreaterThan(currentFloor)) {
+                requestedFloorsUp.add(requestedFloor);
                 state = ElevatorState.GOING_UP;
             }
-            if (floor.isLowerThan(currentFloor)) {
+            if (requestedFloor.isLowerThan(currentFloor)) {
+                requestedFloorsDown.add(requestedFloor);
                 state = ElevatorState.GOING_DOWN;
             }
 
             door.close();
 
         } else if (state == ElevatorState.GOING_UP) {
-            requestedFloors.add(floor);
-            requestedFloor = requestedFloors.first();
+
+            if (requestedFloor.isGreaterThan(currentFloor)) {
+                requestedFloorsUp.add(requestedFloor);
+            }
+            if (requestedFloor.isLowerThan(currentFloor)) {
+                requestedFloorsDown.add(requestedFloor);
+            }
+
+            this.requestedFloor = requestedFloorsUp.first();
 
         } else if (state == ElevatorState.GOING_DOWN) {
-            requestedFloors.add(floor);
-            requestedFloor = requestedFloors.last();
+
+            if (requestedFloor.isGreaterThan(currentFloor)) {
+                requestedFloorsUp.add(requestedFloor);
+            }
+            if (requestedFloor.isLowerThan(currentFloor)) {
+                requestedFloorsDown.add(requestedFloor);
+            }
+
+            this.requestedFloor = requestedFloorsDown.last();
         }
     }
 

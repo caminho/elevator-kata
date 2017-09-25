@@ -9,7 +9,6 @@ import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.engine.Engine.Direction;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -106,6 +105,8 @@ public class ElevatorTest {
             "3, 5, 4, 4",
             "6, 4, 5, 5",
             "6, 5, 4, 5",
+            "3, 4, 2, 4",
+            "3, 2, 4, 2",
     })
     public void shouldStopEngineAtNearestRequestedFloor(
             int startLevel, int firstRequest, int secondRequest, int reached) {

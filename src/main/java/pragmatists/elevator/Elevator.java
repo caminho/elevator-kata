@@ -73,10 +73,12 @@ public class Elevator implements
 
     @Override
     public void doorStateChanged(DoorState doorState) {
-        if (requestedFloor == null) {
+        if (requestExists()) {
             return;
         }
-        engine.start(currentFloor, requestedDirection());
+        if (doorState.equals(DoorState.CLOSED)) {
+            engine.start(currentFloor, requestedDirection());
+        }
     }
 
     private Direction requestedDirection() {
@@ -106,6 +108,10 @@ public class Elevator implements
 
     private boolean atRequestedFloor() {
         return currentFloor.equals(requestedFloor);
+    }
+
+    private boolean requestExists() {
+        return requestedFloor == null;
     }
 
     @Override

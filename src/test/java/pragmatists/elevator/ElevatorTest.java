@@ -9,6 +9,7 @@ import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.engine.Engine.Direction;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -164,6 +165,27 @@ public class ElevatorTest {
     }
 
     @Test
+    @Parameters({
+            "3,   5, 4,    4",
+            "3,   4, 5,    4",
+            "6,   4, 5,    5",
+            "6,   5, 4,    5",
+    })
+    public void shouldOpenDoorAfterStopAtNearestRequestedFloor(
+            int startingLevel, int firstRequest, int secondRequest, int reachedLevel) {
+
+        Elevator elevator = anElevator().startingAt(startingLevel).build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+
+        elevator.floorReached(Floor.ofLevel(reachedLevel));
+        elevator.engineStopped();
+
+        verify(door).open();
+    }
+
+    @Test
     @Parameters({"2, 1", "2, 3", "5, 4", "8, -1"})
     public void shouldNotOpenDoorWhenStopAtMiddleLevel(
             int requestedLevel, int middleLevel) {
@@ -175,5 +197,44 @@ public class ElevatorTest {
         elevator.engineStopped();
 
         verify(door, times(0)).open();
+    }
+
+    @Test
+    @Parameters({
+            "3, 5, 4, 4",
+            "3, 4, 5, 4",
+            "6, 4, 5, 5",
+            "6, 5, 4, 5",
+
+    })
+    public void shouldCloseDoorWhenGoingToNextRequestedFloor(
+            int startingLevel, int firstRequest, int secondRequest, int reachedFloor) {
+
+        Elevator elevator = anElevator().startingAt(startingLevel).build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+
+        elevator.floorReached(Floor.ofLevel(reachedFloor));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+
+        verify(door).close();
+    }
+
+    @Test
+    public void shouldStartEngineWithGivenDirectionWhenVisitingNextFloor() {
+
+        Elevator elevator = anElevator().startingAt(3).build();
+
+        elevator.floorRequested(Floor.ofLevel(5));
+        elevator.floorRequested(Floor.ofLevel(4));
+
+        elevator.floorReached(Floor.ofLevel(4));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine).start(Floor.ofLevel(4), Direction.UP);
     }
 }

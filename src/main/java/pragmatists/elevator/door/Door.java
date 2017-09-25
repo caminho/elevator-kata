@@ -8,7 +8,7 @@ public interface Door {
     void setListener(DoorListener doorListener);
 
     enum DoorState {
-        CLOSED
+        OPENED, CLOSED
     }
 
 }

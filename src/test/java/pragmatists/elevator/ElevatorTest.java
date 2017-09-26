@@ -4,6 +4,8 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.engine.Engine;
@@ -242,7 +244,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"4, 2", "2, 4"})
+    @Parameters({"4, 2", "2, 4", "2, -2"})
     public void should_open_door_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -259,7 +261,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"4, 2", "2, 4"})
+    @Parameters({"4, 2", "2, 4", "2, -2"})
     public void should_close_door_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -336,7 +338,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"-4, -2", "-2, -4"})
+    @Parameters({"-4, -2", "-2, -4", "-2, 2"})
     public void should_stop_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -352,7 +354,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"-4, -2", "-2, -4"})
+    @Parameters({"-4, -2", "-2, -4", "-2, 2"})
     public void should_open_door_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -369,7 +371,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"-4, -2", "-2, -4"})
+    @Parameters({"-4, -2", "-2, -4", "-2, 2"})
     public void should_close_door_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -435,4 +437,62 @@ public class ElevatorTest {
 
     // elevator_goes_to_floor_2nd_and_then_go_down_to_floor_minus_2nd_in_request_order
 
+    @Test
+    public void should_start_engine_up_and_down_when_last_requested_floor_is_below_current(){
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(-2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        InOrder inOrder = Mockito.inOrder(engine);
+        inOrder.verify(engine).start(Direction.UP);
+        inOrder.verify(engine).start(Direction.DOWN);
+    }
+
+    @Test
+    public void should_start_engine_down_and_up_when_last_requested_floor_is_higher_than_current(){
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(-2));
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        InOrder inOrder = Mockito.inOrder(engine);
+        inOrder.verify(engine).start(Direction.DOWN);
+        inOrder.verify(engine).start(Direction.UP);
+    }
+
+    @Test
+    public void should_stop_at_last_requested_floor_when_direction_changes_and_multiple_floors_requested() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(-2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(0));
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+
+        verify(engine, times(2)).stop();
+    }
 }

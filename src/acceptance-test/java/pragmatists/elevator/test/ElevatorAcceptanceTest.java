@@ -181,7 +181,6 @@ public class ElevatorAcceptanceTest {
         elevator.thenDoorOpened();
     }
 
-    @Ignore
     @Test
     public void elevator_goes_to_floor_2nd_and_then_go_down_to_floor_minus_2nd() {
 
@@ -205,6 +204,33 @@ public class ElevatorAcceptanceTest {
         elevator.thenFloorReached(0);
         elevator.thenFloorReached(-1);
         elevator.thenFloorReached(-2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+    }
+
+    @Test
+    public void elevator_goes_to_floor_minus_2nd_and_then_go_up_to_floor_2nd() {
+
+        elevator.whenRun();
+        elevator.thenDoorOpened();
+
+        // go to -2nd floor
+        elevator.whenButtonPressed(-2);
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.DOWN);
+        elevator.thenFloorReached(-1);
+        elevator.thenFloorReached(-2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+
+        // go to 2nd floor
+        elevator.whenButtonPressed(2);
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.UP);
+        elevator.thenFloorReached(-1);
+        elevator.thenFloorReached(0);
+        elevator.thenFloorReached(1);
+        elevator.thenFloorReached(2);
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
     }

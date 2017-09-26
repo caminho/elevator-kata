@@ -41,29 +41,35 @@ public class Elevator implements
 
     @Override
     public void floorRequested(Floor floor) {
+        if (!floor.equals(currentFloor)) {
+            queueFloor(floor);
+            if (elevatorIsWaiting()) {
+                moveToGoingState();
+            }
+        }
+    }
 
+    private void moveToGoingState() {
+        if (!requestedFloorsUp.isEmpty()) {
+            elevatorState = ElevatorState.GOING_UP;
+        }
+        if (!requestedFloorsDown.isEmpty()) {
+            elevatorState = ElevatorState.GOING_DOWN;
+        }
+        door.close();
+    }
+
+    private void queueFloor(Floor floor) {
         if (floor.isGreaterThan(currentFloor)) {
             requestedFloorsUp.add(floor);
         }
         if (floor.isLowerThan(currentFloor)) {
             requestedFloorsDown.add(floor);
         }
-
-        if (elevatorState == ElevatorState.WAITING) {
-
-            if (floor.isGreaterThan(currentFloor)) {
-                elevatorState = ElevatorState.GOING_UP;
-            }
-            if (floor.isLowerThan(currentFloor)) {
-                elevatorState = ElevatorState.GOING_DOWN;
-            }
-            door.close();
-        }
     }
 
     @Override
     public void doorStateChanged(DoorState doorState) {
-
         if (doorState == DoorState.OPENED) {
             doorOpened();
         } else if (doorState == DoorState.CLOSED) {
@@ -76,48 +82,50 @@ public class Elevator implements
     }
 
     private void doorOpened() {
+        removeCurrentFromRequestedFloors();
+        if (floorRequestsExist()) {
+            moveToGoingState();
+        } else {
+            moveToWaitingState();
+        }
+    }
 
+    private void removeCurrentFromRequestedFloors() {
         if (elevatorState == ElevatorState.GOING_UP
                 && requestedFloorsUp.contains(currentFloor)) {
             requestedFloorsUp.remove(currentFloor);
         }
-
         if (elevatorState == ElevatorState.GOING_DOWN
                 && requestedFloorsDown.contains(currentFloor)) {
             requestedFloorsDown.remove(currentFloor);
         }
+    }
 
-        if (!requestedFloorsUp.isEmpty() || !requestedFloorsDown.isEmpty()) {
-
-            if (requestedFloorsUp.isEmpty()) {
-                elevatorState = ElevatorState.GOING_DOWN;
-            }
-            if (requestedFloorsDown.isEmpty()) {
-                elevatorState = ElevatorState.GOING_UP;
-            }
-
-            door.close();
-
-        } else {
-            elevatorState = ElevatorState.WAITING;
-        }
+    private void moveToWaitingState() {
+        elevatorState = ElevatorState.WAITING;
     }
 
     @Override
     public void floorReached(Floor floor) {
         currentFloor = floor;
-        if (reachedRequestedFloor()) {
+        if (requestedFloorReached()) {
             engine.stop();
         }
     }
 
-    private boolean reachedRequestedFloor() {
+    private boolean requestedFloorReached() {
+        Floor requestedFloor = nextRequestedFloor();
+        return currentFloor.equals(requestedFloor);
+    }
+
+    private Floor nextRequestedFloor() {
+        Floor requestedFloor = null;
         if (elevatorState == ElevatorState.GOING_UP) {
-            return currentFloor.equals(requestedFloorsUp.first());
+            requestedFloor = requestedFloorsUp.first();
         } else if (elevatorState == ElevatorState.GOING_DOWN) {
-            return currentFloor.equals(requestedFloorsDown.last());
+            requestedFloor = requestedFloorsDown.last();
         }
-        return false;
+        return requestedFloor;
     }
 
     @Override
@@ -130,6 +138,14 @@ public class Elevator implements
         return "Elevator{" +
                 "currentFloor=" + currentFloor +
                 '}';
+    }
+
+    private boolean floorRequestsExist() {
+        return !requestedFloorsUp.isEmpty() || !requestedFloorsDown.isEmpty();
+    }
+
+    private boolean elevatorIsWaiting() {
+        return elevatorState == ElevatorState.WAITING;
     }
 
     private enum ElevatorState {

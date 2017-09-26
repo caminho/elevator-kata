@@ -1,6 +1,5 @@
 package pragmatists.elevator.test;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import pragmatists.elevator.engine.Engine.Direction;
 

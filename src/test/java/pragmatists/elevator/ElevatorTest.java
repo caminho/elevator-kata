@@ -66,6 +66,17 @@ public class ElevatorTest {
     }
 
     @Test
+    @Parameters({"-2", "-1", "1", "2"})
+    public void should_not_close_door_when_requested_current_floor(int requested) {
+
+        Elevator elevator = anElevator().startingAt(requested).build();
+
+        elevator.floorRequested(Floor.ofLevel(requested));
+
+        verify(door, times(0)).close();
+    }
+
+    @Test
     @Parameters({"1", "2", "3", "4"})
     public void should_start_engine_up_after_closing_door(int requested) {
 

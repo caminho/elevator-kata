@@ -15,6 +15,7 @@ public class Elevator implements
     private final Engine engine;
 
     private Floor currentFloor = Floor.ofLevel(0);
+    private Floor requestedFloor;
 
 
     public Elevator(Door door, Engine engine) {
@@ -35,12 +36,20 @@ public class Elevator implements
     }
 
     @Override
-    public void doorStateChanged(DoorState closed) {
-        engine.start(Direction.UP);
+    public void doorStateChanged(DoorState doorState) {
+        if (requestedFloor == null) {
+            return;
+        }
+        if (requestedFloor.isGreaterThan(currentFloor)) {
+            engine.start(Direction.UP);
+        } else if (requestedFloor.isLowerThan(currentFloor)) {
+            engine.start(Direction.DOWN);
+        }
     }
 
     @Override
     public void floorRequested(Floor floor) {
+        requestedFloor = floor;
         door.close();
     }
 

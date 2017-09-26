@@ -97,4 +97,17 @@ public class ElevatorTest {
 
         verify(door).open();
     }
+
+    // elevator_goes_to_floor_minus_1st
+
+    @Test
+    public void should_start_engine_down_after_closing_door() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(-1));
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine).start(Direction.DOWN);
+    }
 }

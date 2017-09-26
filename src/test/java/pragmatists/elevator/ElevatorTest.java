@@ -150,7 +150,48 @@ public class ElevatorTest {
 
     // elevator_goes_to_floor_2nd_and_then_to_floor_4th
 
+    @Test
+    public void should_close_door_when_new_request_arrive() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.floorRequested(Floor.ofLevel(2));
+
+        verify(door, times(2)).close();
+    }
+
+
     // elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th
 
     // elevator_goes_to_floor_2nd_and_then_to_floor_4th_ignoring_request_order
+
+    // elevator_goes_to_floor_2nd_and_then_to_floor_4th_ignoring_request_order
+
+    @Test
+    public void should_not_close_door_twice_when_multiple_floors_requested() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(2));
+
+        verify(door, times(1)).close();
+    }
+
+    @Test
+    public void should_start_engine_up_when_multiple_floors_requested() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine).start(Direction.UP);
+    }
 }

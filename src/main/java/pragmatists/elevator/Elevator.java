@@ -11,6 +11,9 @@ import pragmatists.elevator.panel.ButtonListener;
 public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
 
+    private enum ElevatorState {WAITING, GOING_UP, GOING_DOWN}
+    private ElevatorState state = ElevatorState.WAITING;
+
     private final Door door;
     private final Engine engine;
 
@@ -36,28 +39,50 @@ public class Elevator implements
     }
 
     @Override
-    public void doorStateChanged(DoorState doorState) {
-        if (requestedFloor == null) {
-            return;
-        }
-        if (requestedFloor.isGreaterThan(currentFloor)) {
-            engine.start(Direction.UP);
-        } else if (requestedFloor.isLowerThan(currentFloor)) {
-            engine.start(Direction.DOWN);
+    public void floorRequested(Floor floor) {
+        if (state == ElevatorState.WAITING) {
+            requestedFloor = floor;
+            if (floor.isGreaterThan(currentFloor)) {
+                state = ElevatorState.GOING_UP;
+            }
+            if (floor.isLowerThan(currentFloor)) {
+                state = ElevatorState.GOING_DOWN;
+            }
+            door.close();
         }
     }
 
     @Override
-    public void floorRequested(Floor floor) {
-        requestedFloor = floor;
-        door.close();
+    public void doorStateChanged(DoorState doorState) {
+        if (doorState == DoorState.OPENED) {
+
+            state = ElevatorState.WAITING;
+            requestedFloor = null;
+
+        } else if (doorState == DoorState.CLOSED) {
+
+            if (requestedFloor == null) {
+                return;
+            }
+
+            if (state == ElevatorState.GOING_UP) {
+                engine.start(Direction.UP);
+            } else if (state == ElevatorState.GOING_DOWN) {
+                engine.start(Direction.DOWN);
+            }
+        }
     }
 
     @Override
     public void floorReached(Floor floor) {
-        if (floor.equals(requestedFloor)) {
+        currentFloor = floor;
+        if (reachedRequestedFloor()) {
             engine.stop();
         }
+    }
+
+    private boolean reachedRequestedFloor() {
+        return currentFloor.equals(requestedFloor);
     }
 
     @Override

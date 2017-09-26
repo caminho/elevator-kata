@@ -46,4 +46,12 @@ public class ElevatorDoorTest {
 
         verify(doorListener).doorStateChanged(DoorState.CLOSED);
     }
+
+    @Test
+    public void shouldNotifyListenerWhenDoorOpened() {
+
+        door.open();
+
+        verify(doorListener).doorStateChanged(DoorState.OPENED);
+    }
 }

@@ -24,6 +24,9 @@ public class ElevatorDoor implements Door {
     @Override
     public void open() {
         eventLogger.logEvent(new DoorOpenEvent());
+        if (doorListener != null) {
+            doorListener.doorStateChanged(DoorState.OPENED);
+        }
     }
 
     @Override

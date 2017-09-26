@@ -55,7 +55,9 @@ public class Elevator implements
 
     @Override
     public void floorReached(Floor floor) {
-        engine.stop();
+        if (floor.equals(requestedFloor)) {
+            engine.stop();
+        }
     }
 
     @Override

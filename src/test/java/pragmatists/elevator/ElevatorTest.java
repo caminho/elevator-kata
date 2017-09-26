@@ -9,6 +9,7 @@ import pragmatists.elevator.engine.Engine;
 import pragmatists.elevator.engine.Engine.Direction;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(JUnitParamsRunner.class)
@@ -109,5 +110,20 @@ public class ElevatorTest {
         elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(Direction.DOWN);
+    }
+
+    // elevator_goes_to_floor_2nd
+
+    @Test
+    public void should_avoid_not_requested_floors_when_moving_up() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+
+        verify(engine, times(0)).stop();
+        verify(door, times(0)).open();
     }
 }

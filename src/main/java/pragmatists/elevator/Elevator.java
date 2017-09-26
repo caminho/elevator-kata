@@ -42,6 +42,7 @@ public class Elevator implements
     public void floorRequested(Floor floor) {
         requestedFloors.add(floor);
         if (elevatorState == ElevatorState.WAITING) {
+
             if (floor.isGreaterThan(currentFloor)) {
                 elevatorState = ElevatorState.GOING_UP;
             }
@@ -56,7 +57,7 @@ public class Elevator implements
     public void doorStateChanged(DoorState doorState) {
         if (doorState == DoorState.OPENED) {
             requestedFloors.remove(currentFloor);
-            if (! requestedFloors.isEmpty()) {
+            if (!requestedFloors.isEmpty()) {
                 door.close();
             } else {
                 elevatorState = ElevatorState.WAITING;
@@ -77,8 +78,7 @@ public class Elevator implements
     private boolean reachedRequestedFloor() {
         if (elevatorState == ElevatorState.GOING_UP) {
             return currentFloor.equals(requestedFloors.first());
-        }
-        if (elevatorState == ElevatorState.GOING_DOWN) {
+        } else if (elevatorState == ElevatorState.GOING_DOWN) {
             return currentFloor.equals(requestedFloors.last());
         }
         return false;

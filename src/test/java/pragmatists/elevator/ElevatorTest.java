@@ -149,16 +149,18 @@ public class ElevatorTest {
     // elevator_goes_to_floor_2nd_and_then_to_floor_4th
 
     @Test
-    public void should_close_door_when_new_request_arrive() {
+    @Parameters({"1, 2", "-1, -2"})
+    public void should_close_door_when_new_request_arrive(
+            int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
         elevator.doorStateChanged(DoorState.CLOSED);
-        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(firstRequest));
         elevator.engineStopped();
         elevator.doorStateChanged(DoorState.OPENED);
-        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
 
         verify(door, times(2)).close();
     }
@@ -170,12 +172,14 @@ public class ElevatorTest {
     // elevator_goes_to_floor_2nd_and_then_to_floor_4th_ignoring_request_order
 
     @Test
-    public void should_not_close_door_twice_when_multiple_floors_requested() {
+    @Parameters({"1, 2", "2, 1", "-1, -2", "-2, -1", "1, -2", "2, -1"})
+    public void should_not_close_door_twice_when_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(4));
-        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
 
         verify(door, times(1)).close();
     }

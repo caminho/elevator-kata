@@ -63,34 +63,43 @@ public class Elevator implements
 
     @Override
     public void doorStateChanged(DoorState doorState) {
+
         if (doorState == DoorState.OPENED) {
-
-            if (elevatorState == ElevatorState.GOING_UP
-                    && requestedFloorsUp.contains(currentFloor)) {
-                requestedFloorsUp.remove(currentFloor);
-            }
-            if (elevatorState == ElevatorState.GOING_DOWN
-                    && requestedFloorsDown.contains(currentFloor)) {
-                requestedFloorsDown.remove(currentFloor);
-            }
-
-            if (!requestedFloorsUp.isEmpty() || !requestedFloorsDown.isEmpty()) {
-
-                if (requestedFloorsUp.isEmpty()) {
-                    elevatorState = ElevatorState.GOING_DOWN;
-                }
-                if (requestedFloorsDown.isEmpty()) {
-                    elevatorState = ElevatorState.GOING_UP;
-                }
-
-                door.close();
-
-            } else {
-                elevatorState = ElevatorState.WAITING;
-            }
-
+            doorOpened();
         } else if (doorState == DoorState.CLOSED) {
-            engine.start(elevatorState.direction());
+            doorClosed();
+        }
+    }
+
+    private void doorClosed() {
+        engine.start(elevatorState.direction());
+    }
+
+    private void doorOpened() {
+
+        if (elevatorState == ElevatorState.GOING_UP
+                && requestedFloorsUp.contains(currentFloor)) {
+            requestedFloorsUp.remove(currentFloor);
+        }
+
+        if (elevatorState == ElevatorState.GOING_DOWN
+                && requestedFloorsDown.contains(currentFloor)) {
+            requestedFloorsDown.remove(currentFloor);
+        }
+
+        if (!requestedFloorsUp.isEmpty() || !requestedFloorsDown.isEmpty()) {
+
+            if (requestedFloorsUp.isEmpty()) {
+                elevatorState = ElevatorState.GOING_DOWN;
+            }
+            if (requestedFloorsDown.isEmpty()) {
+                elevatorState = ElevatorState.GOING_UP;
+            }
+
+            door.close();
+
+        } else {
+            elevatorState = ElevatorState.WAITING;
         }
     }
 

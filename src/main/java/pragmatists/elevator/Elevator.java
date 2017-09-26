@@ -1,5 +1,6 @@
 package pragmatists.elevator;
 
+import com.google.common.collect.Sets;
 import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.door.DoorListener;
@@ -8,6 +9,8 @@ import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.engine.EngineListener;
 import pragmatists.elevator.panel.ButtonListener;
 
+import java.util.TreeSet;
+
 public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
 
@@ -15,7 +18,8 @@ public class Elevator implements
     private final Engine engine;
     private ElevatorState elevatorState = ElevatorState.WAITING;
     private Floor currentFloor = Floor.ofLevel(0);
-    private Floor requestedFloor;
+
+    private TreeSet<Floor> requestedFloors = Sets.newTreeSet();
 
     public Elevator(Door door, Engine engine) {
         this.door = door;
@@ -23,7 +27,6 @@ public class Elevator implements
         this.door.setListener(this);
         this.engine.setListener(this);
     }
-
 
     public Elevator(Door door, Engine engine, Floor startingFloor) {
         this(door, engine);
@@ -37,8 +40,8 @@ public class Elevator implements
 
     @Override
     public void floorRequested(Floor floor) {
+        requestedFloors.add(floor);
         if (elevatorState == ElevatorState.WAITING) {
-            requestedFloor = floor;
             if (floor.isGreaterThan(currentFloor)) {
                 elevatorState = ElevatorState.GOING_UP;
             }
@@ -52,7 +55,12 @@ public class Elevator implements
     @Override
     public void doorStateChanged(DoorState doorState) {
         if (doorState == DoorState.OPENED) {
-            elevatorState = ElevatorState.WAITING;
+            requestedFloors.remove(currentFloor);
+            if (! requestedFloors.isEmpty()) {
+                door.close();
+            } else {
+                elevatorState = ElevatorState.WAITING;
+            }
         } else if (doorState == DoorState.CLOSED) {
             engine.start(elevatorState.direction());
         }
@@ -67,7 +75,13 @@ public class Elevator implements
     }
 
     private boolean reachedRequestedFloor() {
-        return currentFloor.equals(requestedFloor);
+        if (elevatorState == ElevatorState.GOING_UP) {
+            return currentFloor.equals(requestedFloors.first());
+        }
+        if (elevatorState == ElevatorState.GOING_DOWN) {
+            return currentFloor.equals(requestedFloors.last());
+        }
+        return false;
     }
 
     @Override

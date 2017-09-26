@@ -165,7 +165,6 @@ public class ElevatorTest {
         verify(door, times(2)).close();
     }
 
-
     // elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th
 
     // elevator_goes_to_floor_2nd_and_then_to_floor_4th_ignoring_request_order
@@ -194,4 +193,35 @@ public class ElevatorTest {
 
         verify(engine).start(Direction.UP);
     }
+
+    @Test
+    public void should_ignore_not_requested_floors_when_multiple_floors_requested() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(4));
+        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+
+        verify(engine, times(0)).stop();
+        verify(door, times(0)).open();
+    }
+
+    @Test
+    @Parameters({"4, 2", "2, 4"})
+    public void should_stop_at_nearest_requested_floor_when_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(2));
+
+        verify(engine).stop();
+    }
+
 }

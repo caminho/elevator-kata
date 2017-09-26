@@ -19,7 +19,8 @@ public class Elevator implements
     private ElevatorState elevatorState = ElevatorState.WAITING;
     private Floor currentFloor = Floor.ofLevel(0);
 
-    private TreeSet<Floor> requestedFloors = Sets.newTreeSet();
+    private TreeSet<Floor> requestedFloorsUp = Sets.newTreeSet();
+    private TreeSet<Floor> requestedFloorsDown = Sets.newTreeSet();
 
     public Elevator(Door door, Engine engine) {
         this.door = door;
@@ -40,7 +41,14 @@ public class Elevator implements
 
     @Override
     public void floorRequested(Floor floor) {
-        requestedFloors.add(floor);
+
+        if (floor.isGreaterThan(currentFloor)) {
+            requestedFloorsUp.add(floor);
+        }
+        if (floor.isLowerThan(currentFloor)) {
+            requestedFloorsDown.add(floor);
+        }
+
         if (elevatorState == ElevatorState.WAITING) {
 
             if (floor.isGreaterThan(currentFloor)) {
@@ -56,12 +64,31 @@ public class Elevator implements
     @Override
     public void doorStateChanged(DoorState doorState) {
         if (doorState == DoorState.OPENED) {
-            requestedFloors.remove(currentFloor);
-            if (!requestedFloors.isEmpty()) {
+
+            if (elevatorState == ElevatorState.GOING_UP
+                    && requestedFloorsUp.contains(currentFloor)) {
+                requestedFloorsUp.remove(currentFloor);
+            }
+            if (elevatorState == ElevatorState.GOING_DOWN
+                    && requestedFloorsDown.contains(currentFloor)) {
+                requestedFloorsDown.remove(currentFloor);
+            }
+
+            if (!requestedFloorsUp.isEmpty() || !requestedFloorsDown.isEmpty()) {
+
+                if (requestedFloorsUp.isEmpty()) {
+                    elevatorState = ElevatorState.GOING_DOWN;
+                }
+                if (requestedFloorsDown.isEmpty()) {
+                    elevatorState = ElevatorState.GOING_UP;
+                }
+
                 door.close();
+
             } else {
                 elevatorState = ElevatorState.WAITING;
             }
+
         } else if (doorState == DoorState.CLOSED) {
             engine.start(elevatorState.direction());
         }
@@ -77,9 +104,9 @@ public class Elevator implements
 
     private boolean reachedRequestedFloor() {
         if (elevatorState == ElevatorState.GOING_UP) {
-            return currentFloor.equals(requestedFloors.first());
+            return currentFloor.equals(requestedFloorsUp.first());
         } else if (elevatorState == ElevatorState.GOING_DOWN) {
-            return currentFloor.equals(requestedFloors.last());
+            return currentFloor.equals(requestedFloorsDown.last());
         }
         return false;
     }

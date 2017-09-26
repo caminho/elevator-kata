@@ -226,7 +226,7 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"4, 2", "2, 4"})
+    @Parameters({"4, 2", "2, 4", "2, -2"})
     public void should_stop_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 

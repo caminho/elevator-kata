@@ -1,6 +1,7 @@
 package pragmatists.elevator;
 
 import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pragmatists.elevator.door.Door;
@@ -54,46 +55,50 @@ public class ElevatorTest {
     // elevator_goes_to_floor_1st
 
     @Test
-    public void should_close_door_after_request() {
+    @Parameters({"-2", "-1", "1", "2"})
+    public void should_close_door_after_request(int requested) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(requested));
 
         verify(door).close();
     }
 
     @Test
-    public void should_start_engine_up_after_closing_door() {
+    @Parameters({"1", "2", "3", "4"})
+    public void should_start_engine_up_after_closing_door(int requested) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(requested));
         elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(Direction.UP);
     }
 
     @Test
-    public void should_stop_engine_at_requested_floor() {
+    @Parameters({"1", "-1"})
+    public void should_stop_engine_at_requested_floor(int requested) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(requested));
         elevator.doorStateChanged(DoorState.CLOSED);
-        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(requested));
 
         verify(engine).stop();
     }
 
     @Test
-    public void should_open_door_when_engine_stopped_at_requested_floor() {
+    @Parameters({"1", "-1"})
+    public void should_open_door_when_engine_stopped_at_requested_floor(int requested) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.floorRequested(Floor.ofLevel(requested));
         elevator.doorStateChanged(DoorState.CLOSED);
-        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(requested));
         elevator.engineStopped();
 
         verify(door).open();
@@ -102,11 +107,12 @@ public class ElevatorTest {
     // elevator_goes_to_floor_minus_1st
 
     @Test
-    public void should_start_engine_down_after_closing_door() {
+    @Parameters({"-1", "-2", "-3", "-4"})
+    public void should_start_engine_down_after_closing_door(int requestedLevel) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(-1));
+        elevator.floorRequested(Floor.ofLevel(requestedLevel));
         elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(Direction.DOWN);
@@ -126,4 +132,25 @@ public class ElevatorTest {
         verify(engine, times(0)).stop();
         verify(door, times(0)).open();
     }
+
+    // elevator_goes_to_floor_minus_2nd
+
+    @Test
+    public void should_avoid_not_requested_floors_when_moving_down() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(-2));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+
+        verify(engine, times(0)).stop();
+        verify(door, times(0)).open();
+    }
+
+    // elevator_goes_to_floor_2nd_and_then_to_floor_4th
+
+    // elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th
+
+    // elevator_goes_to_floor_2nd_and_then_to_floor_4th_ignoring_request_order
 }

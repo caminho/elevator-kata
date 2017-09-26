@@ -181,26 +181,30 @@ public class ElevatorTest {
     }
 
     @Test
-    public void should_start_engine_up_when_multiple_floors_requested() {
+    @Parameters({"4, 2", "2, 4"})
+    public void should_start_engine_up_when_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(4));
-        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
         elevator.doorStateChanged(DoorState.CLOSED);
 
         verify(engine).start(Direction.UP);
     }
 
     @Test
-    public void should_ignore_not_requested_floors_when_multiple_floors_requested() {
+    @Parameters({"4, 2, 1", "2, 4, 1", "-4, -2, -1", "-2, -4, -1"})
+    public void should_ignore_not_requested_floors_when_multiple_floors_requested(
+            int firstRequest, int secondRequest, int reachedLevel) {
 
         Elevator elevator = anElevator().build();
 
-        elevator.floorRequested(Floor.ofLevel(4));
-        elevator.floorRequested(Floor.ofLevel(2));
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
         elevator.doorStateChanged(DoorState.CLOSED);
-        elevator.floorReached(Floor.ofLevel(1));
+        elevator.floorReached(Floor.ofLevel(reachedLevel));
 
         verify(engine, times(0)).stop();
         verify(door, times(0)).open();
@@ -208,7 +212,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"4, 2", "2, 4"})
-    public void should_stop_at_nearest_requested_floor_when_multiple_floors_requested(
+    public void should_stop_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
@@ -224,7 +228,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"4, 2", "2, 4"})
-    public void should_open_door_at_nearest_requested_floor_when_multiple_floors_requested(
+    public void should_open_door_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
@@ -241,7 +245,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"4, 2", "2, 4"})
-    public void should_close_door_at_nearest_requested_floor_when_multiple_floors_requested(
+    public void should_close_door_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
@@ -259,7 +263,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"4, 2", "2, 4"})
-    public void should_start_engine_at_nearest_requested_floor_when_multiple_floors_requested(
+    public void should_start_engine_at_nearest_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
@@ -278,7 +282,7 @@ public class ElevatorTest {
 
     @Test
     @Parameters({"4, 2", "2, 4"})
-    public void should_stop_at_next_requested_floor_when_multiple_floors_requested(
+    public void should_stop_at_next_requested_floor_when_going_up_and_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
         Elevator elevator = anElevator().build();
@@ -293,6 +297,114 @@ public class ElevatorTest {
         elevator.doorStateChanged(DoorState.CLOSED);
         elevator.floorReached(Floor.ofLevel(3));
         elevator.floorReached(Floor.ofLevel(4));
+
+        verify(engine, times(2)).stop();
+    }
+
+    // elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th_ignoring_request_order
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_start_engine_down_when_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine).start(Direction.DOWN);
+    }
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_stop_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+
+        verify(engine).stop();
+    }
+
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_open_door_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+        elevator.engineStopped();
+
+        verify(door).open();
+    }
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_close_door_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+
+        verify(door, times(2)).close();
+    }
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_start_engine_at_nearest_requested_floor_when_going_down_and_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine, times(2)).start(Direction.DOWN);
+    }
+
+    @Test
+    @Parameters({"-4, -2", "-2, -4"})
+    public void should_stop_at_next_requested_floor_when_going_down_and_multiple_floors_requested(
+            int firstRequest, int secondRequest) {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(firstRequest));
+        elevator.floorRequested(Floor.ofLevel(secondRequest));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-1));
+        elevator.floorReached(Floor.ofLevel(-2));
+        elevator.engineStopped();
+        elevator.doorStateChanged(DoorState.OPENED);
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(-3));
+        elevator.floorReached(Floor.ofLevel(-4));
 
         verify(engine, times(2)).stop();
     }

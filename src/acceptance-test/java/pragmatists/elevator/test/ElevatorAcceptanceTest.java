@@ -331,4 +331,44 @@ public class ElevatorAcceptanceTest {
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
     }
+
+    @Test
+    public void elevator_does_not_change_direction() {
+
+        elevator.whenRun();
+        elevator.thenDoorOpened();
+
+        // requesting floors
+        elevator.whenButtonPressed(2);
+        elevator.whenButtonPressed(4);
+
+        // go to 2nd floor
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.UP);
+        elevator.thenFloorReached(1);
+        elevator.thenFloorReached(2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+
+        // go to 4th floor
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.UP);
+        elevator.thenFloorReached(3);
+
+        // queue floor request when going down
+        elevator.whenButtonPressed(1);
+
+        elevator.thenFloorReached(4);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+
+        // go to 1st floor
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.DOWN);
+        elevator.thenFloorReached(3);
+        elevator.thenFloorReached(2);
+        elevator.thenFloorReached(1);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+    }
 }

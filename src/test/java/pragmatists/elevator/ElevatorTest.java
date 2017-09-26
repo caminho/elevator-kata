@@ -4,7 +4,9 @@ import junitparams.JUnitParamsRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import pragmatists.elevator.door.Door;
+import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.engine.Engine;
+import pragmatists.elevator.engine.Engine.Direction;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -60,4 +62,39 @@ public class ElevatorTest {
         verify(door).close();
     }
 
+    @Test
+    public void should_start_engine_up_after_closing_door() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorStateChanged(DoorState.CLOSED);
+
+        verify(engine).start(Direction.UP);
+    }
+
+    @Test
+    public void should_stop_engine_at_requested_floor() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+
+        verify(engine).stop();
+    }
+
+    @Test
+    public void should_open_door_when_engine_stopped_at_requested_floor() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+        elevator.doorStateChanged(DoorState.CLOSED);
+        elevator.floorReached(Floor.ofLevel(1));
+        elevator.engineStopped();
+
+        verify(door).open();
+    }
 }

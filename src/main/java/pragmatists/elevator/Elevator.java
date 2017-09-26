@@ -4,12 +4,12 @@ import pragmatists.elevator.door.Door;
 import pragmatists.elevator.door.Door.DoorState;
 import pragmatists.elevator.door.DoorListener;
 import pragmatists.elevator.engine.Engine;
+import pragmatists.elevator.engine.Engine.Direction;
 import pragmatists.elevator.engine.EngineListener;
 import pragmatists.elevator.panel.ButtonListener;
 
 public class Elevator implements
         ButtonListener, DoorListener, EngineListener {
-
 
     private final Door door;
     private final Engine engine;
@@ -36,7 +36,7 @@ public class Elevator implements
 
     @Override
     public void doorStateChanged(DoorState closed) {
-        // TODO: 26.09.2017
+        engine.start(Direction.UP);
     }
 
     @Override
@@ -46,12 +46,12 @@ public class Elevator implements
 
     @Override
     public void floorReached(Floor floor) {
-        // TODO: 26.09.2017
+        engine.stop();
     }
 
     @Override
     public void engineStopped() {
-        // TODO: 26.09.2017
+        door.open();
     }
 
     @Override

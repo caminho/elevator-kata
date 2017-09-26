@@ -30,9 +30,7 @@ public class ElevatorEngineTest {
     @Test
     public void shouldStartEngineWithoutMoving() {
 
-        Floor currentLevel = Floor.ofLevel(1);
-
-        engine.start(currentLevel, Direction.UP);
+        engine.start(Direction.UP);
 
         verifyZeroInteractions(engineSensor);
     }
@@ -43,7 +41,8 @@ public class ElevatorEngineTest {
 
         Floor startFloor = Floor.ofLevel(startLevel);
 
-        engine.start(startFloor, Direction.UP);
+        engine.reset(startFloor);
+        engine.start(Direction.UP);
         engine.step();
 
         verify(engineSensor).floorReached(Floor.ofLevel(startLevel + 1));
@@ -55,7 +54,8 @@ public class ElevatorEngineTest {
 
         Floor startFloor = Floor.ofLevel(startLevel);
 
-        engine.start(startFloor, Direction.DOWN);
+        engine.reset(startFloor);
+        engine.start(Direction.DOWN);
         engine.step();
 
         verify(engineSensor).floorReached(Floor.ofLevel(startLevel - 1));
@@ -67,7 +67,8 @@ public class ElevatorEngineTest {
 
         Floor startFloor = Floor.ofLevel(startLevel);
 
-        engine.start(startFloor, Direction.UP);
+        engine.reset(startFloor);
+        engine.start(Direction.UP);
         engine.step();
         engine.step();
 
@@ -81,7 +82,8 @@ public class ElevatorEngineTest {
 
         Floor startFloor = Floor.ofLevel(startLevel);
 
-        engine.start(startFloor, Direction.DOWN);
+        engine.reset(startFloor);
+        engine.start(Direction.DOWN);
         engine.step();
         engine.step();
 
@@ -101,7 +103,8 @@ public class ElevatorEngineTest {
     @Test
     public void shouldNotMoveWhenStopped() {
 
-        engine.start(Floor.ofLevel(3), Direction.UP);
+        engine.reset(Floor.ofLevel(3));
+        engine.start(Direction.UP);
         engine.stop();
         engine.step();
 
@@ -111,10 +114,11 @@ public class ElevatorEngineTest {
     @Test
     public void shouldThrowExceptionWhenStartedAgain() {
 
-        engine.start(Floor.ofLevel(2), Direction.UP);
+        engine.reset(Floor.ofLevel(2));
+        engine.start(Direction.UP);
 
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
-                engine.start(Floor.ofLevel(4), Direction.DOWN)
+                engine.start(Direction.DOWN)
         );
     }
 }

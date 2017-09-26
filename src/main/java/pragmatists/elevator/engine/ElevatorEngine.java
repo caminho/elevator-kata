@@ -11,7 +11,7 @@ public class ElevatorEngine implements Engine {
     private final EventLogger logger;
     private EngineListener engineSensor;
 
-    private Floor floor;
+    private Floor currentFloor;
     private Direction direction = Direction.NONE;
 
     public ElevatorEngine(EventLogger logger) {
@@ -19,18 +19,22 @@ public class ElevatorEngine implements Engine {
     }
 
     @Override
-    public void start(Floor startingFloor, Direction direction) {
-        if (elevatorIsMoving()) {
-            throw new IllegalStateException("elevator is moving");
-        }
-        this.floor = startingFloor;
-        this.direction = direction;
-        notifyEngineStarted();
+    public void setListener(EngineListener engineSensor) {
+        this.engineSensor = engineSensor;
     }
 
     @Override
-    public void setListener(EngineListener engineSensor) {
-        this.engineSensor = engineSensor;
+    public void reset(Floor floor) {
+        this.currentFloor = floor;
+    }
+
+    @Override
+    public void start(Direction direction) {
+        if (elevatorIsMoving()) {
+            throw new IllegalStateException("elevator is moving");
+        }
+        this.direction = direction;
+        notifyEngineStarted();
     }
 
     @Override
@@ -58,19 +62,19 @@ public class ElevatorEngine implements Engine {
     }
 
     private void notifyElevatorMoved() {
-        logger.logEvent(new FloorReachedEvent(floor.level()));
+        logger.logEvent(new FloorReachedEvent(currentFloor.level()));
         if (engineSensor != null) {
-            engineSensor.floorReached(floor);
+            engineSensor.floorReached(currentFloor);
         }
     }
 
     private void goToNextFloor() {
         switch (direction) {
             case UP:
-                floor = floor.nextFloor();
+                currentFloor = currentFloor.nextFloor();
                 break;
             case DOWN:
-                floor = floor.previousFloor();
+                currentFloor = currentFloor.previousFloor();
                 break;
         }
     }

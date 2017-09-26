@@ -30,6 +30,7 @@ public class Elevator implements
     }
 
     public void run() {
+        engine.reset(currentFloor);
         door.open();
     }
 
@@ -40,7 +41,7 @@ public class Elevator implements
 
     @Override
     public void floorRequested(Floor floor) {
-        // TODO: 26.09.2017
+        door.close();
     }
 
     @Override

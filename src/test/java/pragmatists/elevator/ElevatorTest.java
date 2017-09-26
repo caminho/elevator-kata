@@ -20,7 +20,7 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldRegisterItselfToCollaborators() {
+    public void should_register_itself_to_collaborators() {
 
         Elevator elevator = anElevator().build();
 
@@ -29,7 +29,17 @@ public class ElevatorTest {
     }
 
     @Test
-    public void shouldOpenDoorAfterStart() {
+    public void should_reset_engine_at_start() {
+
+        Elevator elevator = anElevator().startingAt(3).build();
+
+        elevator.run();
+
+        verify(engine).reset(Floor.ofLevel(3));
+    }
+
+    @Test
+    public void should_open_door_at_start() {
 
         Elevator elevator = anElevator().build();
 
@@ -37,4 +47,17 @@ public class ElevatorTest {
 
         verify(door).open();
     }
+
+    // elevator_goes_to_floor_1st
+
+    @Test
+    public void should_close_door_after_request() {
+
+        Elevator elevator = anElevator().build();
+
+        elevator.floorRequested(Floor.ofLevel(1));
+
+        verify(door).close();
+    }
+
 }

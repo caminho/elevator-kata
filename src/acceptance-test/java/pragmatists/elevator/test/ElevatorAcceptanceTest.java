@@ -15,7 +15,6 @@ public class ElevatorAcceptanceTest {
         elevator.thenDoorOpened();
     }
 
-    @Ignore
     @Test
     public void elevator_goes_to_floor_1st() {
 

@@ -181,7 +181,9 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"4, 2", "2, 4"})
+    @Parameters({
+            "4, 2", "2, 4",
+            "4, -2", "2, -4"})
     public void should_start_engine_up_when_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -195,7 +197,16 @@ public class ElevatorTest {
     }
 
     @Test
-    @Parameters({"4, 2, 1", "2, 4, 1", "-4, -2, -1", "-2, -4, -1"})
+    @Parameters({
+            "4, 2, 1",
+            "2, 4, 1",
+            "-4, -2, -1",
+            "-2, -4, -1",
+            "4, -2, 1",
+            "2, -4, 1",
+            "-4, 2, -1",
+            "-2, 4, -1",
+    })
     public void should_ignore_not_requested_floors_when_multiple_floors_requested(
             int firstRequest, int secondRequest, int reachedLevel) {
 
@@ -304,7 +315,10 @@ public class ElevatorTest {
     // elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th_ignoring_request_order
 
     @Test
-    @Parameters({"-4, -2", "-2, -4"})
+    @Parameters({
+            "-4, -2", "-2, -4",
+            "-2, 4", "-4, 2"
+    })
     public void should_start_engine_down_when_multiple_floors_requested(
             int firstRequest, int secondRequest) {
 
@@ -332,7 +346,6 @@ public class ElevatorTest {
 
         verify(engine).stop();
     }
-
 
     @Test
     @Parameters({"-4, -2", "-2, -4"})
@@ -413,4 +426,9 @@ public class ElevatorTest {
     // elevator_goes_to_floor_2nd_and_then_go_down_to_floor_minus_2nd
 
     // elevator_goes_to_floor_minus_2nd_and_then_go_up_to_floor_2nd
+
+    // elevator_visits_requested_floors_in_order_in_one_direction
+
+    // elevator_goes_to_floor_2nd_and_then_go_down_to_floor_minus_2nd_in_request_order
+
 }

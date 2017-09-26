@@ -235,9 +235,8 @@ public class ElevatorAcceptanceTest {
         elevator.thenDoorOpened();
     }
 
-    @Ignore
     @Test
-    public void elevator_visits_once_requested_floors_in_order() {
+    public void elevator_visits_requested_floors_in_order_in_one_direction() {
 
         elevator.whenRun();
         elevator.thenDoorOpened();
@@ -271,6 +270,62 @@ public class ElevatorAcceptanceTest {
 
         // stop at floor 5
         elevator.thenFloorReached(5);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+    }
+
+    @Ignore
+    @Test
+    public void elevator_goes_to_floor_2nd_and_then_go_down_to_floor_minus_2nd_in_request_order() {
+
+        elevator.whenRun();
+        elevator.thenDoorOpened();
+
+        // go to 2nd floor
+        elevator.whenButtonPressed(2);
+        elevator.whenButtonPressed(-2);
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.UP);
+        elevator.thenFloorReached(1);
+        elevator.thenFloorReached(2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+
+        // go to -2nd floor
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.DOWN);
+        elevator.thenFloorReached(1);
+        elevator.thenFloorReached(0);
+        elevator.thenFloorReached(-1);
+        elevator.thenFloorReached(-2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+    }
+
+    @Ignore
+    @Test
+    public void elevator_goes_to_floor_minus_2nd_and_then_go_up_to_floor_2nd_in_request_order() {
+
+        elevator.whenRun();
+        elevator.thenDoorOpened();
+
+        // go to -2nd floor
+        elevator.whenButtonPressed(-2);
+        elevator.whenButtonPressed(2);
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.DOWN);
+        elevator.thenFloorReached(-1);
+        elevator.thenFloorReached(-2);
+        elevator.thenEngineStopped();
+        elevator.thenDoorOpened();
+
+        // go to 2nd floor
+        elevator.thenDoorClosed();
+        elevator.thenEngineStarted(Direction.UP);
+        elevator.thenFloorReached(-1);
+        elevator.thenFloorReached(0);
+        elevator.thenFloorReached(1);
+        elevator.thenFloorReached(2);
         elevator.thenEngineStopped();
         elevator.thenDoorOpened();
     }

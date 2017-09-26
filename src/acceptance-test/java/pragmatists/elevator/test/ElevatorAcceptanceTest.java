@@ -77,7 +77,6 @@ public class ElevatorAcceptanceTest {
         elevator.thenDoorOpened();
     }
 
-    @Ignore
     @Test
     public void elevator_goes_to_floor_2nd_and_then_to_floor_4th() {
 
@@ -103,7 +102,6 @@ public class ElevatorAcceptanceTest {
         elevator.thenDoorOpened();
     }
 
-    @Ignore
     @Test
     public void elevator_goes_to_floor_minus_2nd_and_then_to_floor_minus_4th() {
 
